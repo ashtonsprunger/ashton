@@ -132,7 +132,7 @@ export const photographyDirectory: PhotographyDirectoryItem[] = [
       { label: "High School Seniors", href: "/photography/portfolio#seniors" },
       { label: "Family & Portraits", href: "/photography/portfolio#portraits" },
       { label: "Pricing & Packages", href: "/photography/portfolio#investment" },
-      { label: "Book a Session", href: "/photography/portfolio#booking" },
+      { label: "Book a Session", href: "/photography/portfolio/contact" },
     ]
   },
   {

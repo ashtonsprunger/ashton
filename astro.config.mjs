@@ -7,5 +7,7 @@ export default defineConfig({
   integrations: [tailwind()],
   redirects: {
     '/portfolio': '/photography/portfolio',
+    '/portfolio/contact': '/photography/portfolio/contact',
+    '/photography/contact': '/photography/portfolio/contact',
   },
 });

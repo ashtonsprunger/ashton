@@ -1,0 +1,19 @@
+{
+  "redirects": [
+    {
+      "source": "/portfolio",
+      "destination": "/photography/portfolio",
+      "permanent": true
+    },
+    {
+      "source": "/portfolio/contact",
+      "destination": "/photography/portfolio/contact",
+      "permanent": true
+    },
+    {
+      "source": "/photography/contact",
+      "destination": "/photography/portfolio/contact",
+      "permanent": true
+    }
+  ]
+}
