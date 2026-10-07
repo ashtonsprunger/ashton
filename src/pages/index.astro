@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { softwareDirectory } from '../data/software';
+import { photographyDirectory } from '../data/photography';
+import { musicDirectory } from '../data/music';
+---
+
+<BaseLayout>
+  <div class="space-y-8 text-sm">
+    <p class="text-neutral-300" transition:name="site-intro">
+      I build software, take photos, and make music. Based in Fort Wayne, Indiana.
+    </p>
+
+    <!-- The Three Pillars -->
+    <div class="space-y-6">
+      <a
+        href="/software"
+        class="block group no-underline text-inherit cursor-pointer"
+        transition:name="section-software"
+      >
+        <div class="flex items-center justify-between" transition:name="section-software-header">
+          <h2 class="font-medium text-white">
+            <span class="underline underline-offset-4 decoration-neutral-500 group-hover:decoration-white inline-flex items-center gap-1.5 transition-colors">
+              Software
+              <span class="text-neutral-400 font-mono text-xs group-hover:text-white group-hover:translate-x-0.5 transition-all">→</span>
+            </span>
+          </h2>
+        </div>
+        <ul class="mt-2 pl-4 space-y-1.5 text-neutral-300">
+          {softwareDirectory.map((item) => (
+            <li transition:name={`software-item-${item.id}`}>
+              <div class="font-medium text-neutral-300 group-hover:text-neutral-100 transition-colors">
+                {item.name}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </a>
+
+      <a
+        href="/photography"
+        class="block group no-underline text-inherit cursor-pointer"
+        transition:name="section-photography"
+      >
+        <div class="flex items-center justify-between" transition:name="section-photography-header">
+          <h2 class="font-medium text-white">
+            <span class="underline underline-offset-4 decoration-neutral-500 group-hover:decoration-white inline-flex items-center gap-1.5 transition-colors">
+              Photography
+              <span class="text-neutral-400 font-mono text-xs group-hover:text-white group-hover:translate-x-0.5 transition-all">→</span>
+            </span>
+          </h2>
+        </div>
+        <ul class="mt-2 pl-4 space-y-1.5 text-neutral-300">
+          {photographyDirectory.map((item) => (
+            <li transition:name={`photography-item-${item.id}`}>
+              <div class="font-medium text-neutral-300 group-hover:text-neutral-100 transition-colors">
+                {item.name}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </a>
+
+      <a
+        href="/music"
+        class="block group no-underline text-inherit cursor-pointer"
+        transition:name="section-music"
+      >
+        <div class="flex items-center justify-between" transition:name="section-music-header">
+          <h2 class="font-medium text-white">
+            <span class="underline underline-offset-4 decoration-neutral-500 group-hover:decoration-white inline-flex items-center gap-1.5 transition-colors">
+              Music
+              <span class="text-neutral-400 font-mono text-xs group-hover:text-white group-hover:translate-x-0.5 transition-all">→</span>
+            </span>
+          </h2>
+        </div>
+        <ul class="mt-2 pl-4 space-y-1.5 text-neutral-300">
+          {musicDirectory.map((item) => (
+            <li transition:name={`music-item-${item.id}`}>
+              <div class="font-medium text-neutral-300 group-hover:text-neutral-100 transition-colors">
+                {item.name}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </a>
+    </div>
+
+    <!-- Contact Separated Distinctly -->
+    <div
+      class="pt-4 border-t border-neutral-800 text-xs text-neutral-400 flex flex-wrap items-center gap-x-3 gap-y-1"
+      transition:name="contact-section"
+    >
+      <span>Get in touch: <a href="mailto:sprungerashton@gmail.com" class="text-neutral-200">sprungerashton@gmail.com</a></span>
+      <span class="text-neutral-600">&middot;</span>
+      <a href="https://www.linkedin.com/in/ashton-sprunger-a714971b7/" target="_blank" rel="noopener noreferrer" class="text-neutral-300">
+        LinkedIn <span class="text-neutral-500 font-mono text-[11px]">↗</span>
+      </a>
+    </div>
+  </div>
+</BaseLayout>
+

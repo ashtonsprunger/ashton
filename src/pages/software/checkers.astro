@@ -1,0 +1,744 @@
+---
+import '../../styles/global.css';
+---
+
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkers AI vs. Dave | Ashton Sprunger</title>
+    <meta name="description" content="Checkers AI vs. Dave by Ashton Sprunger." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style is:global>
+      /* Square Styling */
+      .square-light {
+        background-color: #172033;
+      }
+      .square-dark {
+        background-color: #0b111e;
+      }
+
+      /* Piece Styling */
+      .checker-piece {
+        position: absolute;
+        width: 10%;
+        height: 10%;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        box-sizing: border-box;
+        transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease;
+      }
+      .checker-piece:hover {
+        transform: scale(1.08);
+      }
+      .checker-human {
+        background: radial-gradient(circle at 35% 35%, #80ffff, #00b3b3 70%, #008080);
+        border: 2px solid #00FFFF;
+        box-shadow: 0 4px 14px rgba(0, 255, 255, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+      }
+      .checker-ai {
+        background: radial-gradient(circle at 35% 35%, #ff8097, #e01e45 70%, #990022);
+        border: 2px solid #ff4d6d;
+        box-shadow: 0 4px 14px rgba(255, 77, 109, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+      }
+      .checker-selected {
+        outline: 3px solid #ffffff;
+        box-shadow: 0 0 20px #00FFFF, inset 0 0 10px #ffffff;
+        transform: scale(1.12);
+        z-index: 20;
+      }
+
+      .border {
+        border: 3px solid #ffffff !important;
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 4px 14px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Crown on Kings */
+      .checker-crown {
+        color: #ffffff;
+        filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
+      }
+
+      /* Target Move Dots */
+      .move-target {
+        position: absolute;
+        width: 10%;
+        height: 10%;
+        border-radius: 50%;
+        background: rgba(0, 255, 255, 0.3);
+        border: 2px dashed rgba(0, 255, 255, 0.85);
+        cursor: pointer;
+        z-index: 20;
+        box-sizing: border-box;
+        animation: pulseTarget 1.5s infinite;
+      }
+
+      @keyframes pulseTarget {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 0.7;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-[#07090e] text-[#f8fafc] min-h-screen flex flex-col font-mono selection:bg-[#00FFFF]/20 selection:text-[#00FFFF]">
+    <!-- Ambient space glow -->
+    <div class="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+      <div class="absolute -top-[10%] left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-[#00FFFF]/5 blur-[140px]"></div>
+      <div class="absolute bottom-[10%] -left-[10%] h-[400px] w-[500px] rounded-full bg-[#ff4d6d]/5 blur-[140px]"></div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 w-full border-b border-white/10 bg-[#090d16]/90 backdrop-blur-md shadow-lg">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-3.5">
+        <div class="flex items-center gap-3">
+          <a href="/" class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 font-mono text-[11px] text-neutral-400 no-underline hover:text-white hover:border-white/20 transition-all">
+            <span>&larr; ashtonsprunger.com</span>
+          </a>
+          <span class="text-neutral-600 hidden sm:inline">&bull;</span>
+          <span class="font-bold text-sm text-white hidden sm:inline">Checkers AI vs. Dave</span>
+        </div>
+
+        <nav class="flex items-center gap-4 text-xs font-mono">
+          <a href="https://github.com/ashtonsprunger/ai-games" target="_blank" rel="noopener noreferrer" class="text-neutral-400 no-underline hover:text-white transition-colors">
+            Source Code <span class="text-neutral-500 font-mono text-[10px]">&nearr;</span>
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Game Arena -->
+    <main class="mx-auto max-w-5xl px-6 py-6 md:py-10 flex-1 w-full">
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-mono">
+          CHECKERS <span class="text-neutral-500 font-normal text-base sm:text-lg">vs. Dave</span>
+        </h1>
+        <div id="daveFirstContainer">
+          <button id="daveFirstBtn" type="button" class="text-xs font-mono text-[#ff4d6d] hover:text-white transition-colors cursor-pointer underline decoration-[#ff4d6d]/50 hover:decoration-white">
+            Click here to have Dave go first &rarr;
+          </button>
+        </div>
+      </div>
+
+      <!-- Game Arena Grid: Board on Left, Status on Right -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        <!-- Left: Checkerboard Canvas (7 cols) -->
+        <div class="md:col-span-7 flex flex-col items-center">
+          <div class="relative w-full max-w-[480px] aspect-square rounded-2xl border-2 border-white/10 bg-[#0a0f1d] p-2.5 shadow-2xl overflow-hidden select-none">
+            <div id="board" class="w-full h-full relative" style="display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr);">
+              <!-- Rendered dynamically by Ashton's engine -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Dave's Intelligence & Status Panel (5 cols) -->
+        <div id="status" class="md:col-span-5 space-y-4">
+          <!-- Turn Banner -->
+          <div class="rounded-2xl border border-white/10 bg-[#101726]/80 p-5 shadow-xl">
+            <div class="text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1.5">Current Turn</div>
+            <div class="flex flex-col gap-0.5">
+              <h1 id="ai" class="text-2xl font-extrabold text-[#ff4d6d] tracking-tight">- - -</h1>
+              <h1 id="human" class="text-2xl font-extrabold text-[#00FFFF] tracking-tight">YOUR TURN</h1>
+            </div>
+          </div>
+
+          <!-- Dave's Evaluation Card -->
+          <div class="rounded-2xl border border-white/10 bg-[#101726]/80 p-5 shadow-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+              <div class="flex items-center gap-2.5">
+                <div class="h-8 w-8 rounded-full border border-[#ff4d6d]/40 bg-[#ff4d6d]/15 flex items-center justify-center text-[#ff4d6d] font-mono text-xs font-bold shadow-[0_0_12px_rgba(255,77,109,0.3)]">
+                  D
+                </div>
+                <div>
+                  <div class="text-sm font-bold text-white">Dave</div>
+                  <div class="text-[10px] font-mono text-neutral-400">Heuristic AI Engine</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <label for="diff" class="text-xs font-mono text-neutral-400">Difficulty:</label>
+                <select name="diff" id="diff" class="bg-[#141c2e] border border-white/15 text-white font-mono rounded px-2.5 py-1 text-xs outline-none focus:border-[#00FFFF] transition-colors">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4" selected>4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9 ~3 sec</option>
+                  <option value="10">10 ~8 sec</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Dave's Assessment -->
+            <div class="rounded-xl border border-white/5 bg-[#0a0f1d] p-3.5">
+              <div class="text-[10px] font-mono text-neutral-500 uppercase tracking-wider mb-1">Dave's Assessment</div>
+              <h2 id="state" class="text-sm font-medium text-neutral-200 italic leading-snug">
+                "We are tied!"
+              </h2>
+            </div>
+
+            <!-- Win Probability Bar -->
+            <div>
+              <div class="flex items-center justify-between text-[11px] font-mono text-neutral-400 mb-1.5">
+                <span class="text-[#00FFFF]">You</span>
+                <span class="text-[#ff4d6d]">Dave</span>
+              </div>
+              <div id="myProgress" class="h-2.5 w-full rounded-full bg-[#ff4d6d] overflow-hidden flex shadow-inner">
+                <div id="myBar" class="h-full bg-[#00FFFF] transition-all duration-500 ease-out" style="width: 50%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Ashton's Exact Checkers Engine Script -->
+    <script is:inline>
+      let time = 500;
+
+      let currentBoard = [
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [-1, 0, -1, 0, -1, 0, -1, 0],
+        [0, -1, 0, -1, 0, -1, 0, -1],
+        [-1, 0, -1, 0, -1, 0, -1, 0],
+      ];
+
+      let availibleMoves = [];
+      let currentPiece;
+      let HUMAN = -1;
+      let AI = 1;
+      let TURN = HUMAN;
+
+      const human = [-1, -5];
+      const ai = [1, 5];
+
+      function getQueryVariable(variable) {
+        let query = window.location.search.substring(1);
+        let vars = query.split("&");
+        for (let i = 0; i < vars.length; i++) {
+          let pair = vars[i].split("=");
+          if (decodeURIComponent(pair[0]) == variable) {
+            return decodeURIComponent(pair[1]);
+          }
+        }
+        console.log("Query variable %s not found", variable);
+      }
+
+      const printBoard = (board) => {
+        let output = "";
+        let pieces = { "-1": " H ", "-5": "<H>", 1: " C ", 5: "<C>", 0: " _ " };
+        console.log(" _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
+        output += " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n";
+        for (let y = 0; y < board.length; y++) {
+          let str = "|";
+          let space = "|";
+          for (let x = 0; x < board[0].length; x++) {
+            str += `${pieces[board[y][x]]}|`;
+            if (x < 7) {
+              space += ` - +`;
+            }
+          }
+          console.log(str);
+          output += str + "\n";
+          if (y < 7) {
+            console.log(space + " - |");
+          }
+        }
+        console.log("|- - - - - - - - - - - - - - - -|");
+        output += "|- - - - - - - - - - - - - - - -|";
+        return output;
+      };
+
+      const reducer = (previousValue, currentValue) => previousValue + currentValue;
+      const reducer2 = (previousValue, currentValue) => [
+        previousValue[0] + currentValue[0],
+        previousValue[1] + currentValue[1],
+      ];
+
+      const getScore = (board) => {
+        let human = 0.001;
+        let ai = 0.001;
+        let avgHPos = [];
+        let avgAiPos = [];
+        let total = 0;
+        board.forEach((row, y) => {
+          row.forEach((space, x) => {
+            if (space > 0) {
+              ai += space;
+              avgAiPos.push([y, x]);
+            } else if (space < 0) {
+              human -= space;
+              avgHPos.push([y, x]);
+            }
+            total += space;
+          });
+        });
+
+        let summedAiPos = [0, 0];
+        let summedHPos = [0, 0];
+        if (avgHPos.length > 0 && avgAiPos.length > 0) {
+          summedHPos = avgHPos.reduce(reducer2);
+          summedAiPos = avgAiPos.reduce(reducer2);
+        }
+        summedAiPos[0] = summedAiPos[0] / avgAiPos.length;
+        summedAiPos[1] = summedAiPos[1] / avgAiPos.length;
+        summedHPos[0] = summedHPos[0] / avgHPos.length;
+        summedHPos[1] = summedHPos[1] / avgHPos.length;
+        let dist =
+          16 -
+          Math.abs(summedAiPos[0] - summedHPos[0] + summedAiPos[1] - summedHPos[1]);
+        let totalEval = ai / human;
+        if (dist) {
+          totalEval += dist / 800;
+        }
+        return totalEval;
+      };
+
+      const playMove = (board, move) => {
+        let copiedBoard = [
+          [...board[0]],
+          [...board[1]],
+          [...board[2]],
+          [...board[3]],
+          [...board[4]],
+          [...board[5]],
+          [...board[6]],
+          [...board[7]],
+        ];
+        let start = move[0];
+        let end = move[1];
+        let piece = copiedBoard[start[0]][start[1]];
+        copiedBoard[start[0]][start[1]] = 0;
+        if (Math.abs(piece) == 1 && end[0] == (piece < 0 ? 0 : 7)) {
+          piece = piece * 5;
+        }
+        copiedBoard[end[0]][end[1]] = piece;
+        if (Math.abs(start[0] - end[0]) == 2) {
+          let newY = (start[0] + end[0]) / 2;
+          let newX = (start[1] + end[1]) / 2;
+          copiedBoard[newY][newX] = 0;
+        }
+        return copiedBoard;
+      };
+
+      const getMoves = (board, player) => {
+        let moves = [];
+        let pawn = player[0];
+        let king = player[1];
+        let pawn2 = pawn * -1;
+        let king2 = king * -1;
+        for (let y = 0; y < board.length; y++) {
+          for (let x = 0; x < board[0].length; x++) {
+            let piece = board[y][x];
+            if (piece != pawn && piece != king) {
+              continue;
+            }
+            // move forward and left
+            if (board[y + pawn] != undefined && board[y + pawn][x - 1] == 0) {
+              moves.push([
+                [y, x],
+                [y + pawn, x - 1],
+              ]);
+            }
+            // move forward and right
+            if (board[y + pawn] != undefined && board[y + pawn][x + 1] == 0) {
+              moves.push([
+                [y, x],
+                [y + pawn, x + 1],
+              ]);
+            }
+            // jump forward and left
+            if (
+              board[y + pawn] != undefined &&
+              (board[y + pawn][x - 1] == pawn2 || board[y + pawn][x - 1] == king2) &&
+              board[y + pawn + pawn] != undefined &&
+              board[y + pawn + pawn][x - 2] == 0
+            ) {
+              moves.push([
+                [y, x],
+                [y + pawn + pawn, x - 2],
+              ]);
+            }
+            // jump forward and right
+            if (
+              board[y + pawn] != undefined &&
+              (board[y + pawn][x + 1] == pawn2 || board[y + pawn][x + 1] == king2) &&
+              board[y + pawn + pawn] != undefined &&
+              board[y + pawn + pawn][x + 2] == 0
+            ) {
+              moves.push([
+                [y, x],
+                [y + pawn + pawn, x + 2],
+              ]);
+            }
+            if (piece == king) {
+              // move backward and left
+              if (board[y - pawn] != undefined && board[y - pawn][x - 1] == 0) {
+                moves.push([
+                  [y, x],
+                  [y - pawn, x - 1],
+                ]);
+              }
+              // move backward and right
+              if (board[y - pawn] != undefined && board[y - pawn][x + 1] == 0) {
+                moves.push([
+                  [y, x],
+                  [y - pawn, x + 1],
+                ]);
+              }
+              // jump backward and left
+              if (
+                board[y - pawn] != undefined &&
+                (board[y - pawn][x - 1] == pawn2 ||
+                  board[y - pawn][x - 1] == king2) &&
+                board[y - pawn - pawn] != undefined &&
+                board[y - pawn - pawn][x - 2] == 0
+              ) {
+                moves.push([
+                  [y, x],
+                  [y - pawn - pawn, x - 2],
+                ]);
+              }
+              // jump backward and right
+              if (
+                board[y - pawn] != undefined &&
+                (board[y - pawn][x + 1] == pawn2 ||
+                  board[y - pawn][x + 1] == king2) &&
+                board[y - pawn - pawn] != undefined &&
+                board[y - pawn - pawn][x + 2] == 0
+              ) {
+                moves.push([
+                  [y, x],
+                  [y - pawn - pawn, x + 2],
+                ]);
+              }
+            }
+          }
+        }
+        return moves;
+      };
+
+      const checkWinner = (board) => {
+        let neg = 0;
+        let pos = 0;
+        for (let y = 0; y < board.length; y++) {
+          for (let x = 0; x < board[0].length; x++) {
+            let current = board[y][x];
+            if (current > 0) {
+              pos++;
+            } else if (current < 0) {
+              neg++;
+            }
+          }
+        }
+        if (neg == 0) {
+          return Infinity;
+        }
+        if (pos == 0) {
+          return -Infinity;
+        }
+        return 0;
+      };
+
+      const minimax = (board, depth, alpha, beta, maximizingPlayer) => {
+        let winner = checkWinner(board);
+        if (depth == 0 || winner != 0) {
+          return getScore(board) + depth / 1000;
+        }
+        if (maximizingPlayer) {
+          let maxEval = -Infinity;
+          let eval;
+          let moves = getMoves(board, ai);
+          for (let i = 0; i < moves.length; i++) {
+            let move = moves[i];
+            eval = minimax(playMove(board, move), depth - 1, alpha, beta, false);
+            maxEval = Math.max(maxEval, eval);
+            alpha = Math.max(alpha, eval);
+            if (beta <= alpha) {
+              break;
+            }
+          }
+          return maxEval;
+        } else {
+          let minEval = Infinity;
+          let eval;
+          let moves = getMoves(board, human);
+          for (let i = 0; i < moves.length; i++) {
+            let move = moves[i];
+            eval = minimax(playMove(board, move), depth - 1, alpha, beta, true);
+            minEval = Math.min(minEval, eval);
+            beta = Math.min(beta, eval);
+            if (beta <= alpha) {
+              break;
+            }
+          }
+          return minEval;
+        }
+      };
+
+      const getBestMove = (board) => {
+        let moves = getMoves(board, ai);
+        if (moves.length === 0) return null;
+        let evals = [];
+        moves.forEach((move) => {
+          evals.push(
+            minimax(playMove(board, move), DIFFICAULTY, -Infinity, Infinity, false)
+          );
+        });
+        console.log(evals);
+        let max = Math.max(...evals);
+        let stateEl = document.querySelector("#state");
+        if (stateEl) stateEl.innerHTML = `"${getGameStateText(max)}"`;
+        let percent = 100 / (1 + Math.exp(max - 1));
+        console.log("PERCENT:", percent);
+        let barEl = document.querySelector("#myBar");
+        if (barEl) barEl.style.width = `${percent}%`;
+        moves = moves.filter((move, index) => evals[index] == max);
+        return moves[Math.floor(Math.random() * moves.length)];
+      };
+
+      const updateTurns = () => {
+        const aiEl = document.getElementById("ai");
+        const humanEl = document.getElementById("human");
+        if (!aiEl || !humanEl) return;
+        if (TURN == HUMAN) {
+          humanEl.innerText = "YOUR TURN";
+          aiEl.innerText = "- - -";
+        } else {
+          aiEl.innerText = "DAVE'S TURN";
+          humanEl.innerText = "- - -";
+        }
+        if (TURN == HUMAN && getMoves(currentBoard, human).length == 0) {
+          humanEl.innerText = "DAVE WON";
+          aiEl.innerText = "";
+        } else if (TURN == AI && getMoves(currentBoard, ai).length == 0) {
+          humanEl.innerText = "YOU WON";
+          aiEl.innerText = "";
+        }
+      };
+
+      const getGameStateText = (score) => {
+        score = Math.round(score * 10) / 10;
+        if (score == 1) return "We are tied!";
+        if (score >= 800) return "I WILL win this game.";
+        if (score <= -800) return "At this point it IS possible for you to win.";
+        if (score >= 2) return "I will probably win this game.";
+        if (score <= 0) return "It looks like you will probably win this game.";
+        if (score >= 1.5) return "I have a significant lead over you.";
+        if (score <= 0.5) return "You have a significant lead over me.";
+        if (score >= 1.15) return "I am ahead of you.";
+        if (score <= 0.85) return "You are ahead of me.";
+        if (score >= 1.1) return "I am slightly ahead of you.";
+        if (score <= 0.9) return "You are slightly ahead of me.";
+        return score;
+      };
+
+      const crownSvg = `
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="#ffffff" class="checker-crown">
+          <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+        </svg>
+      `;
+
+      const displayCurrentBoardToDom = () => {
+        updateTurns();
+        const boardEl = document.getElementById("board");
+        boardEl.innerHTML = "";
+        for (let i = 0; i < 8; i++) {
+          for (let j = 0; j < 8; j++) {
+            let tile = document.createElement("div");
+            if ((i + j) % 2 == 0) {
+              tile.className = "square-light";
+            } else {
+              tile.className = "square-dark";
+            }
+            boardEl.appendChild(tile);
+          }
+        }
+
+        for (let y = 0; y < currentBoard.length; y++) {
+          for (let x = 0; x < currentBoard[0].length; x++) {
+            let current = currentBoard[y][x];
+            if (current == 0) {
+              continue;
+            }
+            let pieceEl = document.createElement("div");
+            pieceEl.classList.add("checker-piece");
+            if (current < 0) {
+              pieceEl.classList.add("checker-human");
+            } else {
+              pieceEl.classList.add("checker-ai");
+            }
+
+            pieceEl.style.left = `${x * 12.5 + 1.25}%`;
+            pieceEl.style.top = `${y * 12.5 + 1.25}%`;
+
+            if (currentPiece && currentPiece[0] == y && currentPiece[1] == x && availibleMoves.length > 0) {
+              pieceEl.classList.add("checker-selected");
+            }
+
+            if (Math.abs(current) > 1) {
+              pieceEl.classList.add("border");
+              pieceEl.innerHTML = crownSvg;
+            }
+
+            pieceEl.id = `[${y},${x}]`;
+            pieceEl.addEventListener("click", (e) => {
+              let target = e.target.closest(".checker-piece");
+              if (target && target.id) {
+                selectPiece(JSON.parse(target.id));
+              }
+            });
+            boardEl.appendChild(pieceEl);
+          }
+        }
+
+        availibleMoves.forEach((move) => {
+          let moveEl = document.createElement("div");
+          moveEl.classList.add("move-target");
+          moveEl.style.left = `${move[1][1] * 12.5 + 1.25}%`;
+          moveEl.style.top = `${move[1][0] * 12.5 + 1.25}%`;
+          moveEl.id = `[${move[1][0]},${move[1][1]}]`;
+          moveEl.addEventListener("click", (e) => {
+            let target = e.target.closest(".move-target");
+            if (!target) return;
+            hasGameStarted = true;
+            if (daveFirstContainer) daveFirstContainer.style.display = "none";
+            availibleMoves = [];
+            displayCurrentBoardToDom();
+            let move = [currentPiece, JSON.parse(target.id)];
+            currentBoard = playMove(currentBoard, move);
+            moveAnimate(move, target, 44, true);
+            setTimeout(() => {
+              let move = getBestMove(currentBoard);
+              if (move) {
+                currentBoard = playMove(currentBoard, move);
+                moveAnimate(move, null, 44);
+              } else {
+                updateTurns();
+              }
+            }, 1000);
+          });
+          boardEl.appendChild(moveEl);
+        });
+      };
+
+      const moveAnimate = (move, el, times) => {
+        if (times == 44) {
+          availibleMoves = [];
+        }
+        if (times == 0) {
+          displayCurrentBoardToDom();
+          TURN = TURN == AI ? HUMAN : AI;
+          updateTurns();
+          return;
+        }
+        let pieceElem = document.getElementById(JSON.stringify(move[0]));
+        if (!pieceElem) {
+          displayCurrentBoardToDom();
+          TURN = TURN == AI ? HUMAN : AI;
+          updateTurns();
+          return;
+        }
+        pieceElem.style.left = `${
+          Number.parseFloat(pieceElem.style.left) -
+          (move[0][1] - move[1][1]) * 0.28
+        }%`;
+        pieceElem.style.top = `${
+          Number.parseFloat(pieceElem.style.top) -
+          (move[0][0] - move[1][0]) * 0.28
+        }%`;
+        setTimeout(() => moveAnimate(move, el, times - 1), 10);
+      };
+
+      const selectPiece = (piece) => {
+        if (TURN == HUMAN) {
+          currentPiece = piece;
+          availibleMoves = getMoves(currentBoard, human).filter(
+            (move) => move[0][0] == piece[0] && move[0][1] == piece[1]
+          );
+          displayCurrentBoardToDom();
+        }
+      };
+
+      displayCurrentBoardToDom();
+
+      // Difficulty Setup (Defaults to 4 like index.html)
+      const diffSelect = document.getElementById("diff");
+      let DIFFICAULTY = getQueryVariable("diff");
+
+      if (!DIFFICAULTY) {
+        DIFFICAULTY = diffSelect ? diffSelect.value : 4;
+      } else if (diffSelect) {
+        diffSelect.value = DIFFICAULTY;
+      }
+
+      DIFFICAULTY = parseInt(DIFFICAULTY, 10);
+      if (isNaN(DIFFICAULTY)) DIFFICAULTY = 4;
+      DIFFICAULTY--;
+
+      if (DIFFICAULTY < 0) {
+        DIFFICAULTY = 0;
+      }
+      if (DIFFICAULTY > 9) {
+        DIFFICAULTY = 9;
+      }
+
+      console.log("diff:", DIFFICAULTY + 1);
+
+      if (diffSelect) {
+        diffSelect.addEventListener("change", (e) => {
+          let val = parseInt(e.target.value, 10);
+          DIFFICAULTY = Math.max(0, Math.min(9, val - 1));
+          console.log("diff updated to:", DIFFICAULTY + 1);
+        });
+      }
+
+      // Allow Dave to go first before the first move is made
+      let hasGameStarted = false;
+      const daveFirstBtn = document.getElementById("daveFirstBtn");
+      const daveFirstContainer = document.getElementById("daveFirstContainer");
+
+      if (daveFirstBtn) {
+        daveFirstBtn.addEventListener("click", () => {
+          if (hasGameStarted || TURN !== HUMAN) return;
+          hasGameStarted = true;
+          if (daveFirstContainer) daveFirstContainer.style.display = "none";
+          availibleMoves = [];
+          currentPiece = null;
+          TURN = AI;
+          updateTurns();
+          displayCurrentBoardToDom();
+          setTimeout(() => {
+            let move = getBestMove(currentBoard);
+            if (move) {
+              currentBoard = playMove(currentBoard, move);
+              moveAnimate(move, null, 44);
+            } else {
+              updateTurns();
+            }
+          }, 350);
+        });
+      }
+    </script>
+  </body>
+</html>

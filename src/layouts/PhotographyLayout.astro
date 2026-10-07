@@ -1,0 +1,148 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Ashton Sprunger Photography · Portraits & Seniors · Fort Wayne, IN",
+  description = "High school seniors, family sessions, and creative portrait photography based in Fort Wayne, Indiana."
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <!-- Google LocalBusiness & Photographer Schema -->
+    <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "additionalType": "https://schema.org/Photographer",
+      "name": "Ashton Sprunger Photography",
+      "url": "https://ashtonsprunger.com/photography",
+      "email": "sprungerashton@gmail.com",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Fort Wayne",
+        "addressRegion": "IN",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 41.0793,
+        "longitude": -85.1394
+      },
+      "areaServed": [
+        {
+          "@type": "City",
+          "name": "Fort Wayne"
+        },
+        {
+          "@type": "AdministrativeArea",
+          "name": "Allen County, Indiana"
+        }
+      ],
+      "sameAs": [
+        "https://www.facebook.com/profile.php?id=100086326337312"
+      ],
+      "description": "Custom high school senior portraits, outdoor family sessions, and creative portrait photography in Fort Wayne, Indiana."
+    }
+    </script>
+  </head>
+  <body class="bg-[#fafafa] text-[#1a1a1a] antialiased min-h-screen flex flex-col font-sans selection:bg-neutral-900 selection:text-white">
+    
+    <!-- Clean, Bright Modern Header -->
+    <header class="sticky top-0 z-50 w-full border-b border-neutral-200/80 bg-white/85 backdrop-blur-md">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        
+        <!-- Photography Brand -->
+        <div class="flex items-center gap-6">
+          <a href="/photography" class="group flex flex-col no-underline">
+            <span class="text-base sm:text-lg font-bold tracking-tight text-neutral-900 transition-colors group-hover:text-neutral-600">
+              ASHTON SPRUNGER
+            </span>
+            <span class="font-mono text-[10px] tracking-[0.2em] text-neutral-500 uppercase">
+              Photography · Fort Wayne, IN
+            </span>
+          </a>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="hidden md:flex items-center gap-7 text-xs font-semibold tracking-wide text-neutral-600">
+          <a href="#seniors" class="no-underline hover:text-neutral-900 transition-colors">High School Seniors</a>
+          <a href="#portraits" class="no-underline hover:text-neutral-900 transition-colors">Family &amp; Portraits</a>
+          <a href="#investment" class="no-underline hover:text-neutral-900 transition-colors">Pricing &amp; Packages</a>
+          <a
+            href="#booking"
+            class="rounded-full bg-neutral-900 px-5 py-2.5 font-mono text-xs font-medium text-white no-underline hover:bg-neutral-800 transition-all shadow-sm hover:shadow"
+          >
+            Book a Session
+          </a>
+        </nav>
+
+        <!-- Mobile Header CTA -->
+        <div class="flex md:hidden items-center gap-3">
+          <a
+            href="#booking"
+            class="rounded-full bg-neutral-900 px-4 py-2 font-mono text-xs font-medium text-white no-underline"
+          >
+            Book
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Slot -->
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <!-- Clean, Light Modern Footer -->
+    <footer class="border-t border-neutral-200 bg-white py-14 text-neutral-500 text-xs">
+      <div class="mx-auto max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <span class="text-sm font-bold tracking-tight text-neutral-900 block">
+            Ashton Sprunger Photography
+          </span>
+          <span class="text-neutral-500 mt-1 block">
+            Natural-light seniors, outdoor family sessions, and portrait storytelling in Fort Wayne, Indiana.
+          </span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-6 font-mono text-xs">
+          <a
+            href="https://www.facebook.com/profile.php?id=100086326337312"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-neutral-900 font-semibold hover:underline flex items-center gap-1"
+          >
+            Facebook <span class="text-neutral-400 font-mono text-[10px]">↗</span>
+          </a>
+          <a href="mailto:sprungerashton@gmail.com" class="text-neutral-700 hover:text-neutral-900 hover:underline">
+            sprungerashton@gmail.com
+          </a>
+          <a href="/" class="text-neutral-400 hover:text-neutral-700 hover:underline">
+            &larr; Personal Master Site
+          </a>
+        </div>
+      </div>
+
+      <div class="mx-auto max-w-7xl px-6 mt-8 pt-6 border-t border-neutral-100 text-neutral-400 font-mono text-[11px] text-center md:text-left">
+        &copy; {new Date().getFullYear()} Ashton Sprunger Photography. All rights reserved.
+      </div>
+    </footer>
+  </body>
+</html>

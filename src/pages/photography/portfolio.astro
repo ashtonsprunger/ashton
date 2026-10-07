@@ -1,0 +1,423 @@
+---
+import PhotographyLayout from '../../layouts/PhotographyLayout.astro';
+
+const seniorShots = [
+  {
+    title: "Golden Hour Riverfront Session",
+    location: "Promenade Park · Fort Wayne",
+    aspect: "aspect-[4/5]",
+    cardBg: "bg-amber-50/60",
+    gradientTone: "from-amber-700/15 via-orange-800/10 to-amber-100/40",
+    category: "Senior Portrait"
+  },
+  {
+    title: "Canopy Backlight Senior Portrait",
+    location: "Foster Park · Fort Wayne",
+    aspect: "aspect-[4/5]",
+    cardBg: "bg-emerald-50/50",
+    gradientTone: "from-emerald-800/15 via-stone-800/10 to-neutral-200/50",
+    category: "Senior Portrait"
+  },
+  {
+    title: "Downtown Architectural Graduate",
+    location: "Downtown Fort Wayne",
+    aspect: "aspect-[4/5]",
+    cardBg: "bg-neutral-100",
+    gradientTone: "from-slate-800/15 via-neutral-800/10 to-neutral-200/40",
+    category: "Senior Portrait"
+  }
+];
+
+const familyAndPortraits = [
+  {
+    title: "Heritage Family Landscape",
+    location: "Foster Park · Fort Wayne",
+    aspect: "aspect-[3/2]",
+    cardBg: "bg-stone-50",
+    gradientTone: "from-stone-800/15 via-neutral-800/10 to-neutral-200/50",
+    category: "Family Session"
+  },
+  {
+    title: "Natural Light Generational Session",
+    location: "Fort Wayne Meadowlands",
+    aspect: "aspect-[3/2]",
+    cardBg: "bg-amber-50/60",
+    gradientTone: "from-amber-800/15 via-neutral-800/10 to-neutral-200/40",
+    category: "Family Session"
+  },
+  {
+    title: "Creative Studio & Environmental Portrait",
+    location: "Fort Wayne Arts Campus",
+    aspect: "aspect-[4/5]",
+    cardBg: "bg-neutral-100",
+    gradientTone: "from-neutral-800/15 via-stone-800/10 to-neutral-200/40",
+    category: "Creative Portrait"
+  },
+  {
+    title: "Candid Community Gathering",
+    location: "Downtown Riverfront Plaza",
+    aspect: "aspect-[3/2]",
+    cardBg: "bg-neutral-100",
+    gradientTone: "from-slate-800/15 via-neutral-800/10 to-neutral-200/40",
+    category: "Community Event"
+  }
+];
+
+const packages = [
+  {
+    name: "High School Seniors",
+    tagline: "Natural light, authentic personality",
+    price: "$350",
+    popular: true,
+    description: "Relaxed on-location senior sessions tailored to showcase genuine character without stiff or artificial studio poses.",
+    deliverables: [
+      "60–90 minute session at 1–2 Fort Wayne locations",
+      "2–3 wardrobe / outfit changes",
+      "35+ hand-retouched high-resolution images",
+      "Private online gallery with full-resolution downloads",
+      "Full personal print release included"
+    ],
+    ideal: "Graduating high school seniors looking for natural, creative portraits"
+  },
+  {
+    name: "Family & Heritage",
+    tagline: "Timeless connection & community",
+    price: "$300",
+    popular: false,
+    description: "Warm outdoor lifestyle sessions capturing family dynamics, generational milestones, and authentic connection.",
+    deliverables: [
+      "60-minute golden hour outdoor session",
+      "Full family groupings and individual child portraits",
+      "25+ finely edited high-resolution images",
+      "Direct print-order store integration",
+      "Full personal print release included"
+    ],
+    ideal: "Families, couples, and milestone celebrations"
+  },
+  {
+    name: "Portraits & Creative",
+    tagline: "Personal branding & creative headshots",
+    price: "$250",
+    popular: false,
+    description: "Tailored individual sessions for personal branding, artists, musicians, and professional portfolios.",
+    deliverables: [
+      "45-minute on-location or outdoor session",
+      "15+ high-resolution retouched digital images",
+      "Web & personal usage release included",
+      "Fast 5-day digital gallery delivery"
+    ],
+    ideal: "Artists, professionals, musicians, and individual portraits"
+  }
+];
+---
+
+<PhotographyLayout>
+  <!-- Hero Section: Clean, Bright & Welcoming -->
+  <section class="relative bg-white border-b border-neutral-200/70 pt-20 pb-24 md:pt-28 md:pb-32">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3.5 py-1 text-xs font-mono text-neutral-600 mb-6 shadow-sm">
+          <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+          <span>Fort Wayne, Indiana · Senior &amp; Portrait Photography</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-neutral-900 leading-[1.08]">
+          Warm Natural Light.<br />
+          <span class="text-neutral-500">Authentic Moments.</span>
+        </h1>
+
+        <p class="mt-6 text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-2xl font-normal">
+          Custom high school senior portraits, outdoor family sessions, and creative portraiture across Fort Wayne and Northeast Indiana.
+        </p>
+
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <a
+            href="#seniors"
+            class="rounded-full bg-neutral-900 px-8 py-3.5 text-xs font-mono font-semibold text-white no-underline hover:bg-neutral-800 transition-all shadow-md hover:shadow-lg"
+          >
+            Explore Selected Work &darr;
+          </a>
+          <a
+            href="#booking"
+            class="rounded-full border border-neutral-300 bg-white px-8 py-3.5 text-xs font-mono font-semibold text-neutral-800 no-underline hover:bg-neutral-50 hover:border-neutral-400 transition-all shadow-sm"
+          >
+            Book a Session
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Credibility & Comfort Strip -->
+  <section class="border-b border-neutral-200/70 bg-[#fafafa] py-8 text-xs text-neutral-600 font-mono">
+    <div class="mx-auto max-w-7xl px-6 grid grid-cols-2 md:grid-cols-4 gap-6 text-center md:text-left">
+      <div class="p-4 bg-white rounded-xl border border-neutral-200/60 shadow-sm">
+        <span class="text-neutral-900 block font-bold text-base font-sans">Golden Hour Light</span>
+        <span class="text-neutral-500 text-[11px]">Outdoor evening &amp; morning warmth</span>
+      </div>
+      <div class="p-4 bg-white rounded-xl border border-neutral-200/60 shadow-sm">
+        <span class="text-neutral-900 block font-bold text-base font-sans">Fort Wayne Parks</span>
+        <span class="text-neutral-500 text-[11px]">Foster Park, Promenade &amp; Downtown</span>
+      </div>
+      <div class="p-4 bg-white rounded-xl border border-neutral-200/60 shadow-sm">
+        <span class="text-neutral-900 block font-bold text-base font-sans">Relaxed Guidance</span>
+        <span class="text-neutral-500 text-[11px]">Natural direction without stiff posing</span>
+      </div>
+      <div class="p-4 bg-white rounded-xl border border-neutral-200/60 shadow-sm">
+        <span class="text-neutral-900 block font-bold text-base font-sans">Full Print Release</span>
+        <span class="text-neutral-500 text-[11px]">High-res digital download included</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 1: High School Seniors -->
+  <section id="seniors" class="py-20 md:py-28 border-b border-neutral-200/70 bg-white">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-widest text-amber-600 font-semibold">Graduates &amp; Seniors</span>
+          <h2 class="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
+            High School Senior Sessions
+          </h2>
+          <p class="mt-3 text-sm text-neutral-600 max-w-xl leading-relaxed">
+            Relaxed outdoor sessions tailored to showcase genuine personality, style, and accomplishments without rigid, stiff studio poses.
+          </p>
+        </div>
+        <div class="font-mono text-xs text-neutral-500 bg-neutral-100 px-3 py-1.5 rounded-full border border-neutral-200 self-start md:self-auto">
+          Promenade Park · Foster Park · Urban
+        </div>
+      </div>
+
+      <!-- Seniors Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {seniorShots.map((shot) => (
+          <div class="group bg-white rounded-2xl border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col justify-between">
+            <div class={`relative w-full ${shot.aspect} ${shot.cardBg} bg-gradient-to-br ${shot.gradientTone} p-8 flex flex-col justify-between overflow-hidden`}>
+              <div class="flex items-center justify-between text-[11px] font-mono z-10">
+                <span class="rounded-full bg-white/90 text-neutral-800 px-3 py-1 border border-neutral-200/80 shadow-sm font-semibold">
+                  {shot.category}
+                </span>
+                <span class="text-neutral-600 font-medium">Fort Wayne</span>
+              </div>
+
+              <div class="z-10 mt-auto pt-16">
+                <span class="text-xs font-mono text-neutral-500 block mb-1">{shot.location}</span>
+                <h3 class="text-lg sm:text-xl font-bold text-neutral-900 tracking-tight group-hover:text-amber-600 transition-colors">
+                  {shot.title}
+                </h3>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Family & Creative Portraits -->
+  <section id="portraits" class="py-20 md:py-28 border-b border-neutral-200/70 bg-[#fafafa]">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-widest text-emerald-600 font-semibold">Connection &amp; Character</span>
+          <h2 class="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
+            Family &amp; Creative Portraits
+          </h2>
+          <p class="mt-3 text-sm text-neutral-600 max-w-xl leading-relaxed">
+            From multi-generational family gatherings to personal creative portraits, capturing real warmth, connection, and honest moments.
+          </p>
+        </div>
+        <div class="font-mono text-xs text-neutral-500 bg-white px-3 py-1.5 rounded-full border border-neutral-200 self-start md:self-auto shadow-sm">
+          Natural Light · On Location
+        </div>
+      </div>
+
+      <!-- Family & Creative Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {familyAndPortraits.map((shot) => (
+          <div class="group bg-white rounded-2xl border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col justify-between">
+            <div class={`relative w-full ${shot.aspect} ${shot.cardBg} bg-gradient-to-br ${shot.gradientTone} p-8 flex flex-col justify-between overflow-hidden`}>
+              <div class="flex items-center justify-between text-[11px] font-mono z-10">
+                <span class="rounded-full bg-white/90 text-neutral-800 px-3 py-1 border border-neutral-200/80 shadow-sm font-semibold">
+                  {shot.category}
+                </span>
+                <span class="text-neutral-600 font-medium">{shot.location}</span>
+              </div>
+
+              <div class="z-10 mt-auto pt-16">
+                <h3 class="text-xl font-bold text-neutral-900 tracking-tight group-hover:text-emerald-700 transition-colors">
+                  {shot.title}
+                </h3>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Transparent Pricing & Investment Packages -->
+  <section id="investment" class="py-20 md:py-28 border-b border-neutral-200/70 bg-white">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="font-mono text-xs uppercase tracking-widest text-neutral-500 font-semibold">Pricing &amp; Coverage</span>
+        <h2 class="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
+          Transparent Shoot Packages
+        </h2>
+        <p class="mt-3 text-base text-neutral-600">
+          Straightforward pricing with full high-resolution digital image files and print licensing included.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+        {packages.map((pkg) => (
+          <div class={`flex flex-col justify-between rounded-3xl border p-8 transition-all duration-300 ${
+            pkg.popular 
+              ? 'border-neutral-900 bg-white shadow-xl ring-1 ring-neutral-900' 
+              : 'border-neutral-200 bg-white shadow-sm hover:shadow-lg'
+          }`}>
+            <div>
+              {pkg.popular && (
+                <span class="inline-block rounded-full bg-neutral-900 text-white px-3 py-1 font-mono text-[10px] uppercase tracking-wider font-semibold mb-3">
+                  Most Requested
+                </span>
+              )}
+              <span class="font-mono text-xs text-neutral-500 block">{pkg.tagline}</span>
+              <h3 class="text-2xl font-bold text-neutral-900 mt-1">{pkg.name}</h3>
+              <div class="mt-4 font-mono text-3xl font-bold text-neutral-900 border-b border-neutral-100 pb-4">
+                {pkg.price}
+              </div>
+              <p class="mt-4 text-xs text-neutral-600 leading-relaxed">{pkg.description}</p>
+
+              <div class="mt-6 pt-4 border-t border-neutral-100">
+                <span class="font-mono text-[11px] uppercase tracking-wider text-neutral-800 block mb-3 font-semibold">
+                  What's Included:
+                </span>
+                <ul class="space-y-2.5 text-xs text-neutral-700">
+                  {pkg.deliverables.map((item) => (
+                    <li class="flex items-start gap-2.5">
+                      <span class="text-emerald-600 font-bold">✓</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-neutral-100">
+              <span class="block font-mono text-[11px] text-neutral-500 mb-4">
+                Ideal for: {pkg.ideal}
+              </span>
+              <a
+                href="#booking"
+                class={`block w-full text-center rounded-full py-3.5 font-mono text-xs font-bold no-underline transition-all ${
+                  pkg.popular
+                    ? 'bg-neutral-900 text-white hover:bg-neutral-800 shadow-md'
+                    : 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200'
+                }`}
+              >
+                Inquire for Availability &rarr;
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Clean, Comfortable Booking Form -->
+  <section id="booking" class="py-20 md:py-28 bg-[#fafafa]">
+    <div class="mx-auto max-w-3xl px-6">
+      <div class="rounded-3xl border border-neutral-200/80 bg-white p-8 sm:p-12 shadow-xl">
+        <div class="text-center max-w-xl mx-auto mb-10">
+          <span class="font-mono text-xs uppercase tracking-widest text-neutral-500 font-semibold">Direct Booking</span>
+          <h2 class="mt-2 text-3xl font-bold tracking-tight text-neutral-900">
+            Book a Portrait Session
+          </h2>
+          <p class="mt-3 text-sm text-neutral-600">
+            Tell me about your graduation timeline, family ideas, or preferred outdoor locations in Fort Wayne.
+          </p>
+        </div>
+
+        <form
+          action="mailto:sprungerashton@gmail.com"
+          method="GET"
+          class="space-y-6 text-xs font-mono"
+        >
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-neutral-700 font-semibold uppercase tracking-wider mb-2">Your Name</label>
+              <input
+                type="text"
+                name="name"
+                required
+                placeholder="First & Last Name"
+                class="w-full rounded-xl border border-neutral-300 bg-neutral-50/50 px-4 py-3 text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
+              />
+            </div>
+            <div>
+              <label class="block text-neutral-700 font-semibold uppercase tracking-wider mb-2">Email Address</label>
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="you@example.com"
+                class="w-full rounded-xl border border-neutral-300 bg-neutral-50/50 px-4 py-3 text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-neutral-700 font-semibold uppercase tracking-wider mb-2">Session Type</label>
+              <select
+                name="subject"
+                class="w-full rounded-xl border border-neutral-300 bg-neutral-50/50 px-4 py-3 text-sm text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
+              >
+                <option value="[Shoot Inquiry] High School Senior Session">High School Senior Session ($350)</option>
+                <option value="[Shoot Inquiry] Family / Milestone Session">Family / Milestone Session ($300)</option>
+                <option value="[Shoot Inquiry] Creative / Individual Portrait">Creative & Individual Portrait ($250)</option>
+                <option value="[Shoot Inquiry] Community Event Documentary">Community Event Documentary</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-neutral-700 font-semibold uppercase tracking-wider mb-2">Target Date / Preferred Location</label>
+              <input
+                type="text"
+                name="date_location"
+                placeholder="e.g. Fall 2024, Foster Park, Promenade"
+                class="w-full rounded-xl border border-neutral-300 bg-neutral-50/50 px-4 py-3 text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-neutral-700 font-semibold uppercase tracking-wider mb-2">Session Details &amp; Notes</label>
+            <textarea
+              name="body"
+              rows="4"
+              required
+              placeholder="Tell me about student hobbies, outfit ideas, family size, or special moments you'd like captured..."
+              class="w-full rounded-xl border border-neutral-300 bg-neutral-50/50 px-4 py-3 text-sm text-neutral-900 placeholder-neutral-400 focus:bg-white focus:border-neutral-900 focus:outline-none font-sans transition-colors"
+            ></textarea>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-neutral-100">
+            <div class="flex flex-wrap items-center gap-2 text-neutral-500 font-normal">
+              <span>Direct email: <a href="mailto:sprungerashton@gmail.com" class="text-neutral-900 underline font-semibold">sprungerashton@gmail.com</a></span>
+              <span>·</span>
+              <a href="https://www.facebook.com/profile.php?id=100086326337312" target="_blank" rel="noopener noreferrer" class="text-neutral-800 underline font-medium">
+                Facebook Page ↗
+              </a>
+            </div>
+            <button
+              type="submit"
+              class="w-full sm:w-auto rounded-full bg-neutral-900 px-8 py-3.5 text-xs font-bold text-white hover:bg-neutral-800 transition-all shadow-md"
+            >
+              Send Booking Request &rarr;
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</PhotographyLayout>

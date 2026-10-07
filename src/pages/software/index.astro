@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { softwareDirectory } from '../../data/software';
+---
+
+<BaseLayout title="Software · Ashton Sprunger" description="Software projects and tools built by Ashton Sprunger.">
+  <div class="space-y-8 text-sm">
+    <p class="text-neutral-300" transition:name="site-intro">
+      I build software, take photos, and make music. Based in Fort Wayne, Indiana.
+    </p>
+
+    <!-- Software Section (Expanded) -->
+    <div class="space-y-6" transition:name="section-software">
+      <div>
+        <div class="flex items-center justify-between" transition:name="section-software-header">
+          <h2 class="font-medium text-white">
+            <a
+              href="/"
+              class="text-white underline underline-offset-4 decoration-neutral-500 hover:decoration-white inline-flex items-center gap-1.5 group cursor-pointer transition-colors focus:outline-none"
+            >
+              Software
+              <span class="text-neutral-400 font-mono text-xs group-hover:text-white group-hover:-translate-x-0.5 transition-all">←</span>
+            </a>
+          </h2>
+          <a
+            href="/"
+            class="text-xs text-neutral-400 hover:text-white transition-colors underline underline-offset-2 decoration-neutral-600 hover:decoration-white inline-flex items-center gap-1"
+            transition:name="software-back-nav"
+          >
+            <span>←</span> Back
+          </a>
+        </div>
+
+        <ul class="mt-3 pl-4 space-y-3.5 text-neutral-400">
+          {softwareDirectory.map((item) => (
+            <li class="space-y-1" transition:name={`software-item-${item.id}`}>
+              <div class="text-neutral-200 font-medium">
+                {item.name}
+              </div>
+              <ul class="pl-4 space-y-1 text-neutral-400 text-sm">
+                {item.subItems.map((sub) => (
+                  <li>
+                    <a
+                      href={sub.href}
+                      target={sub.isExternal ? "_blank" : undefined}
+                      rel={sub.isExternal ? "noopener noreferrer" : undefined}
+                      class="text-neutral-400 underline hover:text-white transition-colors"
+                    >
+                      {sub.label}
+                      {sub.isExternal && <span class="text-neutral-500 font-mono text-xs"> ↗</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Contact Separated Distinctly -->
+    <div
+      class="pt-4 border-t border-neutral-800 text-xs text-neutral-400 flex flex-wrap items-center gap-x-3 gap-y-1"
+      transition:name="contact-section"
+    >
+      <span>Get in touch: <a href="mailto:sprungerashton@gmail.com" class="text-neutral-200">sprungerashton@gmail.com</a></span>
+      <span class="text-neutral-600">&middot;</span>
+      <a href="https://www.linkedin.com/in/ashton-sprunger-a714971b7/" target="_blank" rel="noopener noreferrer" class="text-neutral-300">
+        LinkedIn <span class="text-neutral-500 font-mono text-[11px]">↗</span>
+      </a>
+    </div>
+  </div>
+</BaseLayout>

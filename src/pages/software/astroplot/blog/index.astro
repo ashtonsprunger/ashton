@@ -1,0 +1,650 @@
+---
+import '../../../../styles/global.css';
+
+const downloadUrl = "https://github.com/ashtonsprunger/astroplot-releases/releases/download/v1.5.1/AstroPlot.RAW_1.5.1_x64-setup.exe";
+const buyUrl = "https://sprunger.lemonsqueezy.com/checkout/buy/f089d91b-6c23-4233-9bca-f18458a41368";
+---
+
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Astrophotography Workflow &amp; RAW Calibration Guides | AstroPlot RAW</title>
+    <meta name="description" content="In-depth, no-fluff technical guides for astrophotographers: pre-sorting DSLR RAW files for Siril scripts, detecting ruined frames on 2D scatter plots, and DeepSkyStacker vs Siril comparison." />
+    <meta name="keywords" content="astrophotography guides, Siril workflow, cull bad subs, DeepSkyStacker vs Siril, astrophotography pre-sorting, astro raw organization" />
+    <meta name="author" content="Ashton Sprunger" />
+    <link rel="canonical" href="https://ashtonsprunger.com/software/astroplot/blog" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Astrophotography Workflow &amp; RAW Calibration Guides" />
+    <meta property="og:description" content="Step-by-step guides for pre-sorting DSLR exposures, culling ruined frames, and stacking with Siril &amp; DeepSkyStacker." />
+    <meta property="og:url" content="https://ashtonsprunger.com/software/astroplot/blog" />
+    <meta property="og:site_name" content="AstroPlot RAW" />
+    <meta property="og:image" content="/software/astroplot/hero-screenshot.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Astrophotography Workflow &amp; RAW Calibration Guides" />
+    <meta name="twitter:description" content="Step-by-step guides for pre-sorting DSLR exposures, culling ruined frames, and stacking with Siril &amp; DeepSkyStacker." />
+    <meta name="twitter:image" content="/software/astroplot/hero-screenshot.png" />
+
+    <link rel="icon" type="image/png" href="/astroplot/app-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>
+  </head>
+
+  <body class="bg-[#07090e] text-[#f8fafc] antialiased min-h-screen flex flex-col font-['Inter',sans-serif] selection:bg-[#00FFFF]/20 selection:text-[#00FFFF]">
+    <!-- Ambient space glow -->
+    <div class="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+      <div class="absolute -top-[10%] left-1/2 -translate-x-1/2 h-[500px] w-[900px] rounded-full bg-[#0e2244]/40 blur-[130px]"></div>
+      <div class="absolute top-[40%] -right-[10%] h-[450px] w-[500px] rounded-full bg-[#261241]/30 blur-[140px]"></div>
+      <div class="absolute bottom-[10%] -left-[10%] h-[400px] w-[500px] rounded-full bg-[#00374b]/20 blur-[140px]"></div>
+    </div>
+
+    <!-- Sticky Navigation Header -->
+    <header class="sticky top-0 z-50 w-full border-b border-[#00FFFF]/20 bg-[#090d16]/90 backdrop-blur-md shadow-lg">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-3.5">
+        <div class="flex items-center gap-4">
+          <a href="/software/astroplot" class="flex items-center gap-2.5 no-underline font-bold text-base text-white hover:text-white">
+            <img src="/astroplot/app-icon.png" alt="AstroPlot RAW Logo" class="h-7 w-7 rounded-md shadow-sm" />
+            <span class="tracking-tight">AstroPlot RAW</span>
+          </a>
+          <a
+            href="/"
+            class="hidden sm:inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 font-mono text-[11px] text-neutral-400 no-underline hover:text-white hover:border-white/20 transition-all"
+          >
+            <span>&larr; ashtonsprunger.com</span>
+          </a>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-6 text-xs font-mono font-medium text-neutral-400">
+          <a href="/software/astroplot#how-it-works" class="no-underline hover:text-white transition-colors">How It Works</a>
+          <a href="/software/astroplot/blog" class="no-underline text-white font-semibold transition-colors">Guides</a>
+          <a href="/software/astroplot#pricing" class="no-underline hover:text-white transition-colors">Pricing &amp; Options</a>
+          <a href="/software/astroplot#contact" class="no-underline hover:text-white transition-colors">Contact</a>
+          <a
+            href={downloadUrl}
+            class="rounded-lg bg-[#00FFFF] px-3.5 py-1.5 font-bold text-black no-underline hover:bg-[#33ffff] transition-all shadow-sm btn-nav btn-download-trial"
+            download
+          >
+            Download Free Trial
+          </a>
+        </nav>
+
+        <div class="flex md:hidden">
+          <a
+            href={downloadUrl}
+            class="rounded-lg bg-[#00FFFF] px-3 py-1 font-mono text-xs font-bold text-black no-underline btn-download-trial"
+            download
+          >
+            Download Free Trial
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl px-6 flex-1 w-full py-12 md:py-16">
+      <!-- Breadcrumb -->
+      <div class="mb-8">
+        <a href="/software/astroplot" class="inline-flex items-center gap-2 font-mono text-xs text-neutral-400 no-underline hover:text-[#00FFFF] transition-colors">
+          <span>&larr; Back to AstroPlot RAW</span>
+        </a>
+      </div>
+
+      <!-- Hub Header -->
+      <section class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 rounded-full border border-[#00FFFF]/30 bg-[#00FFFF]/10 px-3.5 py-1 text-xs font-mono text-[#00FFFF] mb-6">
+          <span class="h-1.5 w-1.5 rounded-full bg-[#00FFFF] animate-pulse"></span>
+          <span>Guides &amp; Technical Articles</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white leading-[1.15]">
+          Astrophotography RAW<br />
+          <span class="text-[#00FFFF]">Workflow &amp; Culling Guides</span>
+        </h1>
+
+        <p class="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-neutral-300 leading-relaxed font-normal">
+          Practical, zero-fluff walkthroughs for sorting RAW frames, spotting cloud dips on 2D scatter plots, and feeding pristine calibration data into Siril, DeepSkyStacker, and PixInsight.
+        </p>
+      </section>
+
+      <!-- Guides Cards Grid -->
+      <section class="space-y-6 mb-20">
+        <!-- Guide 1: Siril Pre-sorting -->
+        <a href="/software/astroplot/blog/how-to-pre-sort-raw-files-for-siril" class="group block rounded-2xl border border-white/10 bg-[#101726]/80 p-6 sm:p-8 no-underline hover:border-[#00FFFF]/50 hover:bg-[#131d31] transition-all shadow-xl">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="inline-block rounded-md border border-[#00FFFF]/30 bg-[#00FFFF]/10 px-2.5 py-0.5 font-mono text-xs font-semibold text-[#00FFFF]">
+              Tutorial &amp; Workflow
+            </span>
+            <span class="font-mono text-xs text-neutral-400">5 min read</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white group-hover:text-[#00FFFF] transition-colors leading-snug mb-3">
+            How to Pre-Sort DSLR RAW Files for Siril Stacking in Under 60 Seconds
+          </h2>
+          <p class="text-neutral-300 text-sm leading-relaxed mb-6 font-normal">
+            Siril's automated scripts require strict <code class="font-mono text-xs bg-black/40 text-[#00FFFF] px-1 py-0.5 rounded">/lights</code>, <code class="font-mono text-xs bg-black/40 text-[#00FFFF] px-1 py-0.5 rounded">/darks</code>, <code class="font-mono text-xs bg-black/40 text-[#00FFFF] px-1 py-0.5 rounded">/flats</code>, and <code class="font-mono text-xs bg-black/40 text-[#00FFFF] px-1 py-0.5 rounded">/biases</code> subdirectories. Learn how to separate hundreds of raw exposures mathematically using 2D scatter plots.
+          </p>
+          <div class="flex items-center gap-1.5 font-mono text-xs font-bold text-[#00FFFF] group-hover:translate-x-1 transition-transform">
+            <span>Read Full Guide</span>
+            <span>&rarr;</span>
+          </div>
+        </a>
+
+        <!-- Guide 2: Culling Ruined Subs -->
+        <a href="/software/astroplot/blog/how-to-cull-ruined-astrophotography-subs" class="group block rounded-2xl border border-white/10 bg-[#101726]/80 p-6 sm:p-8 no-underline hover:border-[#00FFFF]/50 hover:bg-[#131d31] transition-all shadow-xl">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="inline-block rounded-md border border-[#00FFFF]/30 bg-[#00FFFF]/10 px-2.5 py-0.5 font-mono text-xs font-semibold text-[#00FFFF]">
+              Subframe Quality &amp; Culling
+            </span>
+            <span class="font-mono text-xs text-neutral-400">6 min read</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white group-hover:text-[#00FFFF] transition-colors leading-snug mb-3">
+            How to Cull Bad Astrophotography Frames Fast Without Squinting at Thumbnails
+          </h2>
+          <p class="text-neutral-300 text-sm leading-relaxed mb-6 font-normal">
+            Stop wasting 45 minutes manual-blinking 400 heavy RAW files. Learn why sigma clipping cannot fix cloud haze, and how to pinpoint ruined exposures in seconds on a 2D coordinate plot.
+          </p>
+          <div class="flex items-center gap-1.5 font-mono text-xs font-bold text-[#00FFFF] group-hover:translate-x-1 transition-transform">
+            <span>Read Full Guide</span>
+            <span>&rarr;</span>
+          </div>
+        </a>
+
+        <!-- Guide 3: DSS vs Siril -->
+        <a href="/software/astroplot/blog/deepskystacker-vs-siril" class="group block rounded-2xl border border-white/10 bg-[#101726]/80 p-6 sm:p-8 no-underline hover:border-[#00FFFF]/50 hover:bg-[#131d31] transition-all shadow-xl">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="inline-block rounded-md border border-[#00FFFF]/30 bg-[#00FFFF]/10 px-2.5 py-0.5 font-mono text-xs font-semibold text-[#00FFFF]">
+              Software Comparison
+            </span>
+            <span class="font-mono text-xs text-neutral-400">7 min read</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white group-hover:text-[#00FFFF] transition-colors leading-snug mb-3">
+            DeepSkyStacker (DSS) vs. Siril: Which Stacking Tool Fits Your RAW Workflow?
+          </h2>
+          <p class="text-neutral-300 text-sm leading-relaxed mb-6 font-normal">
+            An objective head-to-head comparison for DSLR and mirrorless astrophotographers. Compare 32-bit floating point precision, photometric color calibration, and raw file intake pipelines.
+          </p>
+          <div class="flex items-center gap-1.5 font-mono text-xs font-bold text-[#00FFFF] group-hover:translate-x-1 transition-transform">
+            <span>Read Full Guide</span>
+            <span>&rarr;</span>
+          </div>
+        </a>
+      </section>
+
+      <!-- Unified Pricing & Download Section -->
+      <section id="pricing" class="py-12 border-t border-neutral-800">
+        <div class="rounded-3xl border border-[#00FFFF]/40 bg-[#121b2e] p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+          <div class="max-w-xl mx-auto text-center mb-10">
+            <div class="flex items-baseline justify-center gap-3">
+              <span class="text-5xl font-black text-white">$9.99</span>
+              <span class="font-mono text-xs text-neutral-400">one-time purchase · own forever</span>
+            </div>
+            <p class="mt-4 text-sm text-neutral-300 leading-relaxed">
+              One universal license key unlocks AstroPlot RAW on both Windows and macOS. 100% offline &amp; private.
+            </p>
+
+            <div class="mt-6">
+              <a
+                href={`${buyUrl}?embed=1&media=0&logo=0`}
+                class="inline-flex items-center gap-2 rounded-xl bg-[#00FFFF] px-8 py-4 font-mono text-xs font-bold text-black no-underline hover:bg-[#33ffff] transition-all shadow-[0_0_30px_-5px_rgba(0,255,255,0.5)] lemonsqueezy-button"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+                <span>Buy Universal License ($9.99)</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Platform Download Channels -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-8 border-t border-white/10 font-mono text-xs">
+            <!-- Windows Channel -->
+            <div class="rounded-2xl border border-white/10 bg-[#0b101c] p-6 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <span class="font-bold text-sm text-white">Windows 10 / 11</span>
+                  <span class="rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 text-[10px]">
+                    Available Now
+                  </span>
+                </div>
+                <p class="text-neutral-400 text-[11px] font-sans mb-4">
+                  Tested and verified for Windows 10 and Windows 11 (64-bit).
+                </p>
+              </div>
+
+              <div>
+                <a
+                  href={downloadUrl}
+                  class="w-full text-center block rounded-xl bg-white/10 border border-white/20 px-4 py-2.5 font-bold text-white no-underline hover:bg-white/20 transition-all mb-2 btn-download-trial"
+                  download
+                >
+                  Download for Windows (.exe)
+                </a>
+                <span class="text-[10px] text-neutral-500 block text-center">Full app · Includes 14-day free trial</span>
+              </div>
+            </div>
+
+            <!-- macOS Channel -->
+            <div class="rounded-2xl border border-white/10 bg-[#0b101c] p-6 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <span class="font-bold text-sm text-white">macOS</span>
+                  <span class="rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 text-[10px]">
+                    Coming Soon
+                  </span>
+                </div>
+                <p class="text-neutral-400 text-[11px] font-sans mb-4">
+                  In active development for Apple Silicon (M1–M4) and Intel Macs.
+                </p>
+              </div>
+
+              <div>
+                <a
+                  href="mailto:sprungerashton@gmail.com?subject=AstroPlot%20RAW%20macOS%20Waitlist&body=Hi%20Ashton,%20please%20notify%20me%20when%20the%20macOS%20version%20of%20AstroPlot%20RAW%20is%20ready!"
+                  class="w-full text-center flex items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 font-semibold text-neutral-300 no-underline hover:bg-white/10 hover:text-white transition-all mb-2 macos-waitlist-trigger cursor-pointer"
+                >
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                  </svg>
+                  <span>Notify Me on Launch &rarr;</span>
+                </a>
+                <span class="text-[10px] text-neutral-500 block text-center">Apple Silicon &amp; Intel &bull; Free trial on launch</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-neutral-800 bg-[#05070a] py-8 text-neutral-500 text-xs font-mono">
+      <div class="mx-auto max-w-5xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          &copy; {new Date().getFullYear()} AstroPlot Software by Ashton Sprunger &bull; <a href="/software/astroplot/blog" class="text-neutral-400 hover:text-white transition-colors">Guides</a> &bull; <a href="/software/astroplot#contact" class="hover:text-white transition-colors">Contact</a> &bull; <a href="/software/astroplot/privacy" class="hover:text-white transition-colors">Privacy Policy</a> &bull; <a href="/software/astroplot/terms" class="hover:text-white transition-colors">Terms</a>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="/" class="hover:text-white transition-colors">&larr; ashtonsprunger.com</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- macOS Waitlist Modal -->
+    <div id="macosModal" class="macos-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="macosModalTitle" hidden>
+      <div class="macos-modal-dialog">
+        <button type="button" class="macos-modal-close" id="closeMacosModalBtn" aria-label="Close modal">&times;</button>
+        
+        <div class="macos-modal-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 0.92-2.85-.9.04-2.02.6-2.66 1.34-.56.65-1.06 1.71-.93 2.74 1.01.08 2.06-.5 2.67-1.23z"/>
+          </svg>
+        </div>
+
+        <h3 id="macosModalTitle" class="macos-modal-title">macOS Launch Waitlist</h3>
+        <p class="macos-modal-desc">
+          AstroPlot RAW is currently in development for Apple Silicon (M1&ndash;M4) and Intel Macs. Send a quick note to get notified immediately on launch day:
+        </p>
+
+        <div class="macos-modal-actions">
+          <a id="macGmailLink" href="https://mail.google.com/mail/?view=cm&fs=1&to=sprungerashton@gmail.com&su=AstroPlot%20RAW%20macOS%20Waitlist&body=Hi%20Ashton,%20please%20notify%20me%20when%20the%20macOS%20version%20of%20AstroPlot%20RAW%20is%20ready!" target="_blank" rel="noopener" class="macos-action-btn macos-action-gmail">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.263H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
+            </svg>
+            <span>Open in Gmail (Web)</span>
+          </a>
+
+          <a id="macMailtoLink" href="mailto:sprungerashton@gmail.com?subject=AstroPlot%20RAW%20macOS%20Waitlist&body=Hi%20Ashton,%20please%20notify%20me%20when%20the%20macOS%20version%20of%20AstroPlot%20RAW%20is%20ready!" class="macos-action-btn macos-action-client">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L1 7"></path>
+            </svg>
+            <span>Open in Default Mail App</span>
+          </a>
+
+          <button type="button" id="macCopyEmailBtn" class="macos-action-btn macos-action-copy">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+            </svg>
+            <span id="macCopyText">Copy Email Address (sprungerashton@gmail.com)</span>
+          </button>
+        </div>
+
+        <div class="macos-modal-footer">
+          🔒 Zero spam. You'll only receive one notification when the macOS build is ready.
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .macos-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(5, 8, 15, 0.82);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+      }
+      .macos-modal-backdrop.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+      .macos-modal-backdrop[hidden] {
+        display: none !important;
+      }
+      .macos-modal-dialog {
+        position: relative;
+        background: #0d131f;
+        border: 1.5px solid rgba(0, 255, 255, 0.55);
+        border-radius: 14px;
+        padding: 2.25rem 2rem 1.75rem;
+        max-width: 480px;
+        width: 100%;
+        box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 24px 64px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 255, 255, 0.18);
+        transform: scale(0.94) translateY(8px);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        text-align: center;
+      }
+      .macos-modal-backdrop.visible .macos-modal-dialog {
+        transform: scale(1) translateY(0);
+      }
+      .macos-modal-close {
+        position: absolute;
+        top: 0.85rem;
+        right: 0.85rem;
+        background: none;
+        border: none;
+        color: #94a3b8;
+        font-size: 1.65rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition: color 0.15s ease, background 0.15s ease;
+      }
+      .macos-modal-close:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .macos-modal-icon {
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 1.25rem;
+        border-radius: 50%;
+        background: rgba(0, 255, 255, 0.1);
+        border: 1px solid rgba(0, 255, 255, 0.4);
+        color: #00FFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+      }
+      .macos-modal-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #f8fafc;
+        margin-bottom: 0.65rem;
+        letter-spacing: -0.01em;
+      }
+      .macos-modal-desc {
+        font-size: 0.925rem;
+        color: #94a3b8;
+        line-height: 1.55;
+        margin-bottom: 1.5rem;
+      }
+      .macos-modal-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+      .macos-action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.65rem;
+        padding: 0.8rem 1.15rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .macos-action-gmail {
+        background: rgba(234, 67, 53, 0.12);
+        border: 1px solid rgba(234, 67, 53, 0.45);
+        color: #fca5a5;
+      }
+      .macos-action-gmail:hover {
+        background: rgba(234, 67, 53, 0.24);
+        color: #fff;
+        border-color: rgba(234, 67, 53, 0.65);
+      }
+      .macos-action-client {
+        background: rgba(0, 255, 255, 0.1);
+        border: 1px solid rgba(0, 255, 255, 0.45);
+        color: #00FFFF;
+      }
+      .macos-action-client:hover {
+        background: rgba(0, 255, 255, 0.2);
+        color: #fff;
+        border-color: #00FFFF;
+      }
+      .macos-action-copy {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #e2e8f0;
+      }
+      .macos-action-copy:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      .macos-action-copy.copied {
+        background: rgba(0, 255, 255, 0.18);
+        border-color: #00FFFF;
+        color: #00FFFF;
+      }
+      .macos-modal-footer {
+        font-size: 0.775rem;
+        color: #64748b;
+        font-family: 'JetBrains Mono', monospace;
+        line-height: 1.4;
+      }
+
+      /* Download Feedback Toast Notification */
+      .download-toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        max-width: 440px;
+        background: rgba(13, 19, 31, 0.97);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(0, 255, 255, 0.5);
+        border-radius: 12px;
+        padding: 1.25rem 1.25rem 1.25rem 1.4rem;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 24px rgba(0, 255, 255, 0.2);
+        z-index: 9999;
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(24px) scale(0.96);
+        transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+        pointer-events: none;
+      }
+      .download-toast.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+      .download-toast-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(0, 255, 255, 0.15);
+        color: #00FFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .download-toast-content {
+        flex: 1;
+      }
+      .download-toast-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 0.25rem;
+      }
+      .download-toast-desc {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        line-height: 1.45;
+        margin-bottom: 0.75rem;
+      }
+      .download-toast-desc code {
+        font-family: 'JetBrains Mono', monospace;
+        background: rgba(0, 255, 255, 0.1);
+        color: #00FFFF;
+        padding: 1px 4px;
+        border-radius: 3px;
+      }
+      .download-toast-links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.85rem;
+        font-size: 0.825rem;
+      }
+      .download-toast-link {
+        color: #00FFFF;
+        text-decoration: underline;
+        cursor: pointer;
+        font-weight: 500;
+      }
+      .download-toast-link:hover {
+        color: #fff;
+      }
+      .download-toast-close {
+        background: none;
+        border: none;
+        color: #64748b;
+        cursor: pointer;
+        padding: 4px 6px;
+        font-size: 1.35rem;
+        line-height: 1;
+        border-radius: 4px;
+        transition: color 0.15s ease, background-color 0.15s ease;
+      }
+      .download-toast-close:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      @media (max-width: 600px) {
+        .download-toast {
+          bottom: 1rem;
+          left: 1rem;
+          right: 1rem;
+          max-width: none;
+        }
+      }
+    </style>
+
+    <script is:inline>
+      (function() {
+        function fallbackCopy(text, cb) {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          try { document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          if (cb) cb();
+        }
+
+        // macOS Modal Logic
+        const modal = document.getElementById('macosModal');
+        const closeBtn = document.getElementById('closeMacosModalBtn');
+        const macCopyBtn = document.getElementById('macCopyEmailBtn');
+        const macCopyText = document.getElementById('macCopyText');
+
+        function openMacosModal(e) {
+          if (e) e.preventDefault();
+          if (modal) {
+            modal.removeAttribute('hidden');
+            requestAnimationFrame(() => modal.classList.add('visible'));
+          }
+        }
+
+        function closeMacosModal() {
+          if (modal) {
+            modal.classList.remove('visible');
+            setTimeout(() => modal.setAttribute('hidden', ''), 250);
+          }
+        }
+
+        if (closeBtn) closeBtn.addEventListener('click', closeMacosModal);
+        if (modal) {
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeMacosModal();
+          });
+        }
+
+        if (macCopyBtn && macCopyText) {
+          macCopyBtn.addEventListener('click', () => {
+            const email = 'sprungerashton@gmail.com';
+            const originalText = macCopyText.textContent;
+            const onCopied = () => {
+              macCopyText.textContent = '✓ Copied sprungerashton@gmail.com!';
+              macCopyBtn.classList.add('copied');
+              setTimeout(() => {
+                macCopyText.textContent = originalText;
+                macCopyBtn.classList.remove('copied');
+              }, 2500);
+            };
+            if (navigator.clipboard && window.isSecureContext) {
+              navigator.clipboard.writeText(email).then(onCopied).catch(() => fallbackCopy(email, onCopied));
+            } else {
+              fallbackCopy(email, onCopied);
+            }
+          });
+        }
+
+        document.querySelectorAll('.macos-waitlist-trigger').forEach(trigger => {
+          trigger.addEventListener('click', openMacosModal);
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal && !modal.hasAttribute('hidden')) {
+            closeMacosModal();
+          }
+        });
+      })();
+    </script>
+    <script is:inline src="/software/astroplot/download-handler.js"></script>
+  </body>
+</html>

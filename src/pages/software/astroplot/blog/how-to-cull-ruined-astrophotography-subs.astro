@@ -1,0 +1,781 @@
+---
+import '../../../../styles/global.css';
+
+const downloadUrl = "https://github.com/ashtonsprunger/astroplot-releases/releases/download/v1.5.1/AstroPlot.RAW_1.5.1_x64-setup.exe";
+const buyUrl = "https://sprunger.lemonsqueezy.com/checkout/buy/f089d91b-6c23-4233-9bca-f18458a41368";
+---
+
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How to Cull Bad Astrophotography Frames Fast (Clouds, Wind &amp; Satellites) | AstroPlot RAW</title>
+    <meta name="description" content="Stop wasting 45 minutes clicking through 400 identical-looking RAW files. Learn how to spot and exclude ruined light frames in seconds using 2D scatter plots before stacking in Siril or DeepSkyStacker." />
+    <meta name="keywords" content="cull bad astrophotography frames, how to blink sub exposures, identify star trailing astrophotography, remove clouds light frames, astrophotography subframe selector, cull raw files siril" />
+    <meta name="author" content="Ashton Sprunger" />
+    <link rel="canonical" href="https://ashtonsprunger.com/software/astroplot/blog/how-to-cull-ruined-astrophotography-subs" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="How to Cull Bad Astrophotography Frames Fast Without Squinting" />
+    <meta property="og:description" content="Stop clicking through 400 identical black thumbnails. How to detect cloud intrusions, tracking drift, and ruined subs on 2D scatter plots before stacking." />
+    <meta property="og:url" content="https://ashtonsprunger.com/software/astroplot/blog/how-to-cull-ruined-astrophotography-subs" />
+    <meta property="og:site_name" content="AstroPlot RAW" />
+    <meta property="og:image" content="/software/astroplot/blog/how-to-cull-ruined-astrophotography-subs/graph-clusters-raw.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="How to Cull Bad Astrophotography Frames Fast Without Squinting" />
+    <meta name="twitter:description" content="Stop clicking through 400 identical black thumbnails. How to detect cloud intrusions, tracking drift, and ruined subs on 2D scatter plots before stacking." />
+    <meta name="twitter:image" content="/software/astroplot/blog/how-to-cull-ruined-astrophotography-subs/graph-clusters-raw.png" />
+
+    <link rel="icon" type="image/png" href="/astroplot/app-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "How to Cull Bad Astrophotography Frames Fast (Clouds, Wind & Satellites)",
+      "description": "Stop wasting 45 minutes clicking through 400 identical-looking RAW files. Learn how to spot and exclude ruined light frames in seconds using 2D scatter plots before stacking in Siril or DeepSkyStacker.",
+      "author": {
+        "@type": "Person",
+        "name": "Ashton Sprunger"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "AstroPlot RAW",
+        "url": "https://ashtonsprunger.com/software/astroplot"
+      },
+      "datePublished": "2026-09-14",
+      "mainEntityOfPage": "https://ashtonsprunger.com/software/astroplot/blog/how-to-cull-ruined-astrophotography-subs"
+    }
+    </script>
+  </head>
+
+  <body class="bg-[#07090e] text-[#f8fafc] antialiased min-h-screen flex flex-col font-['Inter',sans-serif] selection:bg-[#00FFFF]/20 selection:text-[#00FFFF]">
+    <!-- Ambient space glow -->
+    <div class="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+      <div class="absolute -top-[10%] left-1/2 -translate-x-1/2 h-[500px] w-[900px] rounded-full bg-[#0e2244]/40 blur-[130px]"></div>
+      <div class="absolute top-[40%] -right-[10%] h-[450px] w-[500px] rounded-full bg-[#261241]/30 blur-[140px]"></div>
+      <div class="absolute bottom-[10%] -left-[10%] h-[400px] w-[500px] rounded-full bg-[#00374b]/20 blur-[140px]"></div>
+    </div>
+
+    <!-- Sticky Navigation Header -->
+    <header class="sticky top-0 z-50 w-full border-b border-[#00FFFF]/20 bg-[#090d16]/90 backdrop-blur-md shadow-lg">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-3.5">
+        <div class="flex items-center gap-4">
+          <a href="/software/astroplot" class="flex items-center gap-2.5 no-underline font-bold text-base text-white hover:text-white">
+            <img src="/astroplot/app-icon.png" alt="AstroPlot RAW Logo" class="h-7 w-7 rounded-md shadow-sm" />
+            <span class="tracking-tight">AstroPlot RAW</span>
+          </a>
+          <a
+            href="/"
+            class="hidden sm:inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 font-mono text-[11px] text-neutral-400 no-underline hover:text-white hover:border-white/20 transition-all"
+          >
+            <span>&larr; ashtonsprunger.com</span>
+          </a>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-6 text-xs font-mono font-medium text-neutral-400">
+          <a href="/software/astroplot#how-it-works" class="no-underline hover:text-white transition-colors">How It Works</a>
+          <a href="/software/astroplot/blog" class="no-underline text-white font-semibold transition-colors">Guides</a>
+          <a href="/software/astroplot#pricing" class="no-underline hover:text-white transition-colors">Pricing &amp; Options</a>
+          <a href="/software/astroplot#contact" class="no-underline hover:text-white transition-colors">Contact</a>
+          <a
+            href={downloadUrl}
+            class="rounded-lg bg-[#00FFFF] px-3.5 py-1.5 font-bold text-black no-underline hover:bg-[#33ffff] transition-all shadow-sm btn-nav btn-download-trial"
+            download
+          >
+            Download Free Trial
+          </a>
+        </nav>
+
+        <div class="flex md:hidden">
+          <a
+            href={downloadUrl}
+            class="rounded-lg bg-[#00FFFF] px-3 py-1 font-mono text-xs font-bold text-black no-underline btn-download-trial"
+            download
+          >
+            Download Free Trial
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-3xl px-6 py-12 md:py-16 flex-1 w-full">
+      <!-- Breadcrumb -->
+      <div class="mb-8">
+        <a href="/software/astroplot/blog" class="inline-flex items-center gap-2 font-mono text-xs text-neutral-400 no-underline hover:text-[#00FFFF] transition-colors">
+          <span>&larr; Back to Guides Hub</span>
+        </a>
+      </div>
+
+      <article>
+        <!-- Header -->
+        <header class="mb-10 pb-8 border-b border-white/10">
+          <div class="flex flex-wrap items-center gap-3 mb-4">
+            <span class="rounded-md border border-[#00FFFF]/30 bg-[#00FFFF]/10 px-2.5 py-0.5 font-mono text-xs font-semibold text-[#00FFFF]">
+              Subframe Culling &amp; Quality
+            </span>
+            <span class="font-mono text-xs text-neutral-400">6 min read · 14-Day Free Trial Available</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-[1.15] mb-6">
+            How to Cull Bad Astrophotography Frames Fast Without Squinting at Thumbnails
+          </h1>
+
+          <p class="text-lg sm:text-xl text-neutral-300 leading-relaxed font-normal">
+            Stacking bad subs dilutes your Signal-to-Noise Ratio (SNR) and turns crisp stars into mush. Here is how to stop wasting 45 minutes manual-blinking 400 heavy RAW files and pinpoint cloud dips and ruined frames in seconds using 2D scatter plots.
+          </p>
+        </header>
+
+        <!-- Body -->
+        <div class="text-neutral-300 leading-relaxed space-y-6 text-base font-normal">
+          <p>
+            Every astrophotographer knows the post-session dread: you come home with 400 sixty-second sub-exposures from your star tracker or equatorial mount. You know that somewhere in that four-hour sequence, a high-altitude cloud bank drifted through, a 15-mph wind gust shook the tripod, or a satellite train plowed across the center of your framing.
+          </p>
+          <p>
+            If you stack those ruined frames, they poison your final integration. But finding them usually means opening your files in a dedicated viewer, waiting for 45-megapixel sensor files to de-mosaic, and pressing the right-arrow key four hundred times while squinting at tiny stars.
+          </p>
+          <p>
+            There is a faster, mathematically sound way to cull subs without manual blinking.
+          </p>
+
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mt-12 mb-4 tracking-tight flex items-center gap-3">
+            <span class="h-6 w-1 rounded-full bg-[#00FFFF]"></span>
+            <span>The 3 Major Killers of Astrophotography Subs</span>
+          </h2>
+
+          <p>
+            Before looking at how to filter bad frames, it helps to understand what ruins a sub-exposure and whether stacking software can automatically save you:
+          </p>
+
+          <!-- Defect Table -->
+          <div class="rounded-xl border border-white/10 bg-[#0e1524] overflow-hidden my-8 shadow-xl">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-neutral-300 border-collapse">
+                <thead>
+                  <tr class="border-b border-white/10 bg-[#131c30] font-mono text-xs uppercase text-[#00FFFF]">
+                    <th class="px-4 py-3 font-semibold">Defect</th>
+                    <th class="px-4 py-3 font-semibold">Physical Cause</th>
+                    <th class="px-4 py-3 font-semibold">Does Sigma Clipping Fix It?</th>
+                    <th class="px-4 py-3 font-semibold">Action Required</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                  <tr class="hover:bg-white/[0.02]">
+                    <td class="px-4 py-3.5 font-bold text-white">High Clouds &amp; Haze</td>
+                    <td class="px-4 py-3.5">Light scattering &amp; atmospheric extinction</td>
+                    <td class="px-4 py-3.5 text-rose-300"><strong class="text-rose-400">No.</strong> Skyglow spikes and contrast drops across whole frame.</td>
+                    <td class="px-4 py-3.5 font-mono text-xs text-[#00FFFF] font-bold">Must Cull</td>
+                  </tr>
+                  <tr class="hover:bg-white/[0.02]">
+                    <td class="px-4 py-3.5 font-bold text-white">Wind Gust / Tracking Error</td>
+                    <td class="px-4 py-3.5">Mount periodic error or tripod oscillation</td>
+                    <td class="px-4 py-3.5 text-rose-300"><strong class="text-rose-400">No.</strong> Star shapes elongate or double, softening sharpness.</td>
+                    <td class="px-4 py-3.5 font-mono text-xs text-[#00FFFF] font-bold">Must Cull</td>
+                  </tr>
+                  <tr class="hover:bg-white/[0.02]">
+                    <td class="px-4 py-3.5 font-bold text-white">Airplanes &amp; Satellites</td>
+                    <td class="px-4 py-3.5">Fast transient streaks through field of view</td>
+                    <td class="px-4 py-3.5 text-emerald-300"><strong class="text-emerald-400">Yes</strong> (with 25+ frames &amp; Winsorized Clipping).</td>
+                    <td class="px-4 py-3.5 font-mono text-xs text-neutral-400">Optional (Safe to Keep)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mt-12 mb-4 tracking-tight flex items-center gap-3">
+            <span class="h-6 w-1 rounded-full bg-[#00FFFF]"></span>
+            <span>Why Stacking Software Rejection Can't Fix Clouds</span>
+          </h2>
+
+          <p>
+            Many beginners assume that modern stacking software like Siril, DeepSkyStacker, or PixInsight handles everything with <strong class="text-white">Winsorized Sigma Clipping</strong>.
+          </p>
+          <p>
+            Sigma clipping works by evaluating each pixel coordinate across all aligned frames. If 30 frames record a pixel value of 1,200 ADU, and one single frame records 45,000 ADU because a satellite flashed over that exact pixel, the outlier is rejected.
+          </p>
+          <p>
+            <strong class="text-white">However, clouds are not transient point-source outliers.</strong> When thin cirrus clouds pass through your target:
+          </p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>Target light from your nebula or galaxy is absorbed and scattered (extinction).</li>
+            <li>Local light pollution bounces off the water crystals, lifting background sky brightness across the entire frame.</li>
+          </ul>
+          <p>
+            Because this change affects the entire frame rather than a handful of outlier pixels, sigma clipping incorporates that cloudy frame into the average. <strong class="text-white">Including just 10 cloudy subs in a 60-sub stack can erase the contrast of faint tidal tails and dust lanes you spent hours collecting.</strong>
+          </p>
+
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mt-12 mb-4 tracking-tight flex items-center gap-3">
+            <span class="h-6 w-1 rounded-full bg-[#00FFFF]"></span>
+            <span>Why Manual "Blinking" Fails at Scale</span>
+          </h2>
+
+          <p>
+            The standard advice in forums is to "blink" your data. You open Siril's sequence viewer, Blink in PixInsight, or Adobe Bridge, and tap through your subs one by one.
+          </p>
+          <p>
+            In practice, this method suffers from three critical flaws:
+          </p>
+          <ol class="list-decimal pl-6 space-y-3">
+            <li><strong class="text-white">De-Mosaicing Overhead:</strong> Modern mirrorless cameras (Canon EOS R5, Sony A7R IV, Nikon Z7) produce 45MB to 80MB uncompressed RAW files. De-mosaicing and debayering hundreds of files takes 10 to 15 minutes of disk thrashing before you can even begin reviewing.</li>
+            <li><strong class="text-white">Slow Gradients are Invisible to the Eye:</strong> High-altitude cirrus clouds don't arrive like a thunderhead. They creep in as a thin haze that subtly reduces star count and lifts background levels by 15%. When toggling through frames 2 seconds apart, your eyes adjust to the brightness change and fail to notice the gradual contrast decay.</li>
+            <li><strong class="text-white">Human Fatigue:</strong> After reviewing 150 consecutive dark frames of the Cygnus loop, your eyes glaze over. You miss trailing stars on frame 234 and cloud haze on frame 310.</li>
+          </ol>
+
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mt-12 mb-4 tracking-tight flex items-center gap-3">
+            <span class="h-6 w-1 rounded-full bg-[#00FFFF]"></span>
+            <span>The Modern Solution: 2D Scatter Plot Culling</span>
+          </h2>
+
+          <p>
+            Instead of looking at photos sequentially in image space, plot every file in <strong class="text-white">metadata parameter space</strong>:
+          </p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li><strong class="text-white">X-Axis:</strong> Chronological Capture Time across the night.</li>
+            <li><strong class="text-white">Y-Axis:</strong> Relative Mean Frame Luminance (%).</li>
+          </ul>
+
+          <!-- Graph Screenshot Card -->
+          <div class="rounded-2xl border border-white/10 bg-[#101726] overflow-hidden my-8 shadow-2xl">
+            <img src="/software/astroplot/blog/how-to-cull-ruined-astrophotography-subs/graph-clusters-raw.png" alt="2D scatter plot showing cloud dips and outlier sub exposures" class="w-full h-auto block" loading="lazy" />
+            <div class="p-4 sm:p-5 border-t border-white/10 bg-[#0c121e]">
+              <span class="font-mono text-xs font-semibold text-[#00FFFF] uppercase tracking-wider block mb-1">Visual Scatter Plot</span>
+              <div class="text-sm font-bold text-white mb-1">Spotting Cloud Incursions Chronologically</div>
+              <p class="text-xs text-neutral-400 leading-relaxed font-normal">
+                In clear skies, target light frames form a smooth, consistent horizontal band across the session. When clouds roll in, the data points plunge visibly downward below the main cluster. You can spot an hour of bad weather at a single glance.
+              </p>
+            </div>
+          </div>
+
+          <p>
+            When plotted this way, atmospheric physics does the work for you:
+          </p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li><strong class="text-white">Clear Sky Sub-Exposures:</strong> Maintain steady luminance and tight clustering within a 2% to 4% band.</li>
+            <li><strong class="text-white">Passing Cloud Bands:</strong> Create an immediate, unmistakable downward "V-shaped" dip on the graph.</li>
+            <li><strong class="text-white">Sudden Dew Formation:</strong> Causes a continuous downward slope in transmission over time as your corrector plate or lens fog up.</li>
+          </ul>
+
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mt-12 mb-4 tracking-tight flex items-center gap-3">
+            <span class="h-6 w-1 rounded-full bg-[#00FFFF]"></span>
+            <span>How to Cull Bad Subs with AstroPlot RAW in 30 Seconds</span>
+          </h2>
+
+          <p>
+            <a href="/software/astroplot" class="text-[#00FFFF] underline hover:text-white transition-colors">AstroPlot RAW</a> was engineered specifically to solve this bottleneck. Because it reads raw EXIF headers directly across multi-threaded CPU cores without full debayering, an entire night's shoot of 500 RAW files loads in 2 to 3 seconds.
+          </p>
+          <p>
+            Here is the step-by-step culling workflow:
+          </p>
+
+          <h3 class="text-xl font-bold text-white mt-8 mb-3">1. Drop Your SD Card Folder</h3>
+          <p>
+            Drag your raw card directory into AstroPlot RAW. The app immediately parses all exposure parameters and displays your session on the 2D scatter plot.
+          </p>
+
+          <h3 class="text-xl font-bold text-white mt-8 mb-3">2. Identify the Cloud Outliers</h3>
+          <p>
+            Look at your Light cluster across the middle. Any points dipping noticeably below the primary band represent frames affected by cloud scatter or obstruction.
+          </p>
+
+          <!-- GIF Demo Card -->
+          <div class="rounded-2xl border border-white/10 bg-[#101726] overflow-hidden my-8 shadow-2xl">
+            <img src="/software/astroplot/blog/how-to-cull-ruined-astrophotography-subs/astroplotraw2.gif" alt="Marquee selecting and hiding cloud outliers with H hotkey in AstroPlot RAW" class="w-full h-auto block" loading="lazy" />
+            <div class="p-4 sm:p-5 border-t border-white/10 bg-[#0c121e]">
+              <span class="font-mono text-xs font-semibold text-[#00FFFF] uppercase tracking-wider block mb-1">1-Click Culling</span>
+              <div class="text-sm font-bold text-white mb-1">Marquee-Select Outliers and Press H to Hide</div>
+              <p class="text-xs text-neutral-400 leading-relaxed font-normal">
+                Simply click and drag a marquee selection box over the degraded outlier subs and press <strong class="text-white">H</strong> (Hide) or <strong class="text-white">E</strong> (Exclude). They vanish from the active export sequence immediately.
+              </p>
+            </div>
+          </div>
+
+          <h3 class="text-xl font-bold text-white mt-8 mb-3">3. Export Only Clean Subs for Stacking</h3>
+          <p>
+            Once the bad frames are hidden, click <strong class="text-white">Organize</strong>. AstroPlot RAW copies or moves only the verified clean lights into your destination <code class="font-mono text-xs bg-black/40 text-[#00FFFF] px-1.5 py-0.5 rounded">/lights</code> folder (and sorts your darks, flats, and biases at the same time).
+          </p>
+          <p>
+            When you feed these clean subs into Siril or DeepSkyStacker, your integration SNR is protected, registration finishes faster, and no ruined frames contaminate your master stack.
+          </p>
+        </div>
+
+        <!-- Unified Pricing & Download Section -->
+        <section class="mt-16 pt-12 border-t border-neutral-800">
+          <div class="rounded-3xl border border-[#00FFFF]/40 bg-[#121b2e] p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+            <div class="max-w-xl mx-auto text-center mb-10">
+              <div class="flex items-baseline justify-center gap-3">
+                <span class="text-5xl font-black text-white">$9.99</span>
+                <span class="font-mono text-xs text-neutral-400">one-time purchase · own forever</span>
+              </div>
+              <p class="mt-4 text-sm text-neutral-300 leading-relaxed font-normal">
+                One universal license key unlocks AstroPlot RAW on both Windows and macOS. 100% offline &amp; private.
+              </p>
+
+              <div class="mt-6">
+                <a
+                  href={`${buyUrl}?embed=1&media=0&logo=0`}
+                  class="inline-flex items-center gap-2 rounded-xl bg-[#00FFFF] px-8 py-4 font-mono text-xs font-bold text-black no-underline hover:bg-[#33ffff] transition-all shadow-[0_0_30px_-5px_rgba(0,255,255,0.5)] lemonsqueezy-button"
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>
+                  <span>Buy Universal License ($9.99)</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Platform Download Channels -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-8 border-t border-white/10 font-mono text-xs">
+              <!-- Windows Channel -->
+              <div class="rounded-2xl border border-white/10 bg-[#0b101c] p-6 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-4">
+                    <span class="font-bold text-sm text-white">Windows 10 / 11</span>
+                    <span class="rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 text-[10px]">
+                      Available Now
+                    </span>
+                  </div>
+                  <p class="text-neutral-400 text-[11px] font-sans mb-4">
+                    Tested and verified for Windows 10 and Windows 11 (64-bit).
+                  </p>
+                </div>
+
+                <div>
+                  <a
+                    href={downloadUrl}
+                    class="w-full text-center block rounded-xl bg-white/10 border border-white/20 px-4 py-2.5 font-bold text-white no-underline hover:bg-white/20 transition-all mb-2 btn-download-trial"
+                    download
+                  >
+                    Download for Windows (.exe)
+                  </a>
+                  <span class="text-[10px] text-neutral-500 block text-center">Full app · Includes 14-day free trial</span>
+                </div>
+              </div>
+
+              <!-- macOS Channel -->
+              <div class="rounded-2xl border border-white/10 bg-[#0b101c] p-6 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-4">
+                    <span class="font-bold text-sm text-white">macOS</span>
+                    <span class="rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 text-[10px]">
+                      Coming Soon
+                    </span>
+                  </div>
+                  <p class="text-neutral-400 text-[11px] font-sans mb-4">
+                    In active development for Apple Silicon (M1–M4) and Intel Macs.
+                  </p>
+                </div>
+
+                <div>
+                  <a
+                    href="mailto:sprungerashton@gmail.com?subject=AstroPlot%20RAW%20macOS%20Waitlist&body=Hi%20Ashton,%20please%20notify%20me%20when%20the%20macOS%20version%20of%20AstroPlot%20RAW%20is%20ready!"
+                    class="w-full text-center flex items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 font-semibold text-neutral-300 no-underline hover:bg-white/10 hover:text-white transition-all mb-2 macos-waitlist-trigger cursor-pointer"
+                  >
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span>Notify Me on Launch &rarr;</span>
+                  </a>
+                  <span class="text-[10px] text-neutral-500 block text-center">Apple Silicon &amp; Intel &bull; Free trial on launch</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-neutral-800 bg-[#05070a] py-8 text-neutral-500 text-xs font-mono">
+      <div class="mx-auto max-w-5xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          &copy; {new Date().getFullYear()} AstroPlot Software by Ashton Sprunger &bull; <a href="/software/astroplot/blog" class="text-neutral-400 hover:text-white transition-colors">Guides</a> &bull; <a href="/software/astroplot#contact" class="hover:text-white transition-colors">Contact</a> &bull; <a href="/software/astroplot/privacy" class="hover:text-white transition-colors">Privacy Policy</a> &bull; <a href="/software/astroplot/terms" class="hover:text-white transition-colors">Terms</a>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="/" class="hover:text-white transition-colors">&larr; ashtonsprunger.com</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- macOS Waitlist Modal -->
+    <div id="macosModal" class="macos-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="macosModalTitle" hidden>
+      <div class="macos-modal-dialog">
+        <button type="button" class="macos-modal-close" id="closeMacosModalBtn" aria-label="Close modal">&times;</button>
+        
+        <div class="macos-modal-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 0.92-2.85-.9.04-2.02.6-2.66 1.34-.56.65-1.06 1.71-.93 2.74 1.01.08 2.06-.5 2.67-1.23z"/>
+          </svg>
+        </div>
+
+        <h3 id="macosModalTitle" class="macos-modal-title">macOS Launch Waitlist</h3>
+        <p class="macos-modal-desc">
+          AstroPlot RAW is currently in development for Apple Silicon (M1&ndash;M4) and Intel Macs. Send a quick note to get notified immediately on launch day:
+        </p>
+
+        <div class="macos-modal-actions">
+          <a id="macGmailLink" href="https://mail.google.com/mail/?view=cm&fs=1&to=sprungerashton@gmail.com&su=AstroPlot%20RAW%20macOS%20Waitlist&body=Hi%20Ashton,%20please%20notify%20me%20when%20the%20macOS%20version%20of%20AstroPlot%20RAW%20is%20ready!" target="_blank" rel="noopener" class="macos-action-btn macos-action-gmail">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.263H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
+            </svg>
+            <span>Open in Gmail (Web)</span>
+          </a>
+
+          <a id="macMailtoLink" href="mailto:sprungerashton@gmail.com?subject=AstroPlot%20RAW%20macOS%20Waitlist&body=Hi%20Ashton,%20please%20notify%20me%20when%20the%20macOS%20version%20of%20AstroPlot%20RAW%20is%20ready!" class="macos-action-btn macos-action-client">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L1 7"></path>
+            </svg>
+            <span>Open in Default Mail App</span>
+          </a>
+
+          <button type="button" id="macCopyEmailBtn" class="macos-action-btn macos-action-copy">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+            </svg>
+            <span id="macCopyText">Copy Email Address (sprungerashton@gmail.com)</span>
+          </button>
+        </div>
+
+        <div class="macos-modal-footer">
+          🔒 Zero spam. You'll only receive one notification when the macOS build is ready.
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .macos-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(5, 8, 15, 0.82);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+      }
+      .macos-modal-backdrop.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+      .macos-modal-backdrop[hidden] {
+        display: none !important;
+      }
+      .macos-modal-dialog {
+        position: relative;
+        background: #0d131f;
+        border: 1.5px solid rgba(0, 255, 255, 0.55);
+        border-radius: 14px;
+        padding: 2.25rem 2rem 1.75rem;
+        max-width: 480px;
+        width: 100%;
+        box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 24px 64px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 255, 255, 0.18);
+        transform: scale(0.94) translateY(8px);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        text-align: center;
+      }
+      .macos-modal-backdrop.visible .macos-modal-dialog {
+        transform: scale(1) translateY(0);
+      }
+      .macos-modal-close {
+        position: absolute;
+        top: 0.85rem;
+        right: 0.85rem;
+        background: none;
+        border: none;
+        color: #94a3b8;
+        font-size: 1.65rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition: color 0.15s ease, background 0.15s ease;
+      }
+      .macos-modal-close:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .macos-modal-icon {
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 1.25rem;
+        border-radius: 50%;
+        background: rgba(0, 255, 255, 0.1);
+        border: 1px solid rgba(0, 255, 255, 0.4);
+        color: #00FFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+      }
+      .macos-modal-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #f8fafc;
+        margin-bottom: 0.65rem;
+        letter-spacing: -0.01em;
+      }
+      .macos-modal-desc {
+        font-size: 0.925rem;
+        color: #94a3b8;
+        line-height: 1.55;
+        margin-bottom: 1.5rem;
+      }
+      .macos-modal-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+      .macos-action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.65rem;
+        padding: 0.8rem 1.15rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .macos-action-gmail {
+        background: rgba(234, 67, 53, 0.12);
+        border: 1px solid rgba(234, 67, 53, 0.45);
+        color: #fca5a5;
+      }
+      .macos-action-gmail:hover {
+        background: rgba(234, 67, 53, 0.24);
+        color: #fff;
+        border-color: rgba(234, 67, 53, 0.65);
+      }
+      .macos-action-client {
+        background: rgba(0, 255, 255, 0.1);
+        border: 1px solid rgba(0, 255, 255, 0.45);
+        color: #00FFFF;
+      }
+      .macos-action-client:hover {
+        background: rgba(0, 255, 255, 0.2);
+        color: #fff;
+        border-color: #00FFFF;
+      }
+      .macos-action-copy {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #e2e8f0;
+      }
+      .macos-action-copy:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      .macos-action-copy.copied {
+        background: rgba(0, 255, 255, 0.18);
+        border-color: #00FFFF;
+        color: #00FFFF;
+      }
+      .macos-modal-footer {
+        font-size: 0.775rem;
+        color: #64748b;
+        font-family: 'JetBrains Mono', monospace;
+        line-height: 1.4;
+      }
+
+      /* Download Feedback Toast Notification */
+      .download-toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        max-width: 440px;
+        background: rgba(13, 19, 31, 0.97);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(0, 255, 255, 0.5);
+        border-radius: 12px;
+        padding: 1.25rem 1.25rem 1.25rem 1.4rem;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 24px rgba(0, 255, 255, 0.2);
+        z-index: 9999;
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(24px) scale(0.96);
+        transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+        pointer-events: none;
+      }
+      .download-toast.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+      .download-toast-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(0, 255, 255, 0.15);
+        color: #00FFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .download-toast-content {
+        flex: 1;
+      }
+      .download-toast-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 0.25rem;
+      }
+      .download-toast-desc {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        line-height: 1.45;
+        margin-bottom: 0.75rem;
+      }
+      .download-toast-desc code {
+        font-family: 'JetBrains Mono', monospace;
+        background: rgba(0, 255, 255, 0.1);
+        color: #00FFFF;
+        padding: 1px 4px;
+        border-radius: 3px;
+      }
+      .download-toast-links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.85rem;
+        font-size: 0.825rem;
+      }
+      .download-toast-link {
+        color: #00FFFF;
+        text-decoration: underline;
+        cursor: pointer;
+        font-weight: 500;
+      }
+      .download-toast-link:hover {
+        color: #fff;
+      }
+      .download-toast-close {
+        background: none;
+        border: none;
+        color: #64748b;
+        cursor: pointer;
+        padding: 4px 6px;
+        font-size: 1.35rem;
+        line-height: 1;
+        border-radius: 4px;
+        transition: color 0.15s ease, background-color 0.15s ease;
+      }
+      .download-toast-close:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      @media (max-width: 600px) {
+        .download-toast {
+          bottom: 1rem;
+          left: 1rem;
+          right: 1rem;
+          max-width: none;
+        }
+      }
+    </style>
+
+    <script is:inline>
+      (function() {
+        function fallbackCopy(text, cb) {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          try { document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          if (cb) cb();
+        }
+
+        const modal = document.getElementById('macosModal');
+        const closeBtn = document.getElementById('closeMacosModalBtn');
+        const macCopyBtn = document.getElementById('macCopyEmailBtn');
+        const macCopyText = document.getElementById('macCopyText');
+
+        function openMacosModal(e) {
+          if (e) e.preventDefault();
+          if (modal) {
+            modal.removeAttribute('hidden');
+            requestAnimationFrame(() => modal.classList.add('visible'));
+          }
+        }
+
+        function closeMacosModal() {
+          if (modal) {
+            modal.classList.remove('visible');
+            setTimeout(() => modal.setAttribute('hidden', ''), 250);
+          }
+        }
+
+        if (closeBtn) closeBtn.addEventListener('click', closeMacosModal);
+        if (modal) {
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeMacosModal();
+          });
+        }
+
+        if (macCopyBtn && macCopyText) {
+          macCopyBtn.addEventListener('click', () => {
+            const email = 'sprungerashton@gmail.com';
+            const originalText = macCopyText.textContent;
+            const onCopied = () => {
+              macCopyText.textContent = '✓ Copied sprungerashton@gmail.com!';
+              macCopyBtn.classList.add('copied');
+              setTimeout(() => {
+                macCopyText.textContent = originalText;
+                macCopyBtn.classList.remove('copied');
+              }, 2500);
+            };
+            if (navigator.clipboard && window.isSecureContext) {
+              navigator.clipboard.writeText(email).then(onCopied).catch(() => fallbackCopy(email, onCopied));
+            } else {
+              fallbackCopy(email, onCopied);
+            }
+          });
+        }
+
+        document.querySelectorAll('.macos-waitlist-trigger').forEach(trigger => {
+          trigger.addEventListener('click', openMacosModal);
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal && !modal.hasAttribute('hidden')) {
+            closeMacosModal();
+          }
+        });
+      })();
+    </script>
+    <script is:inline src="/software/astroplot/download-handler.js"></script>
+  </body>
+</html>
